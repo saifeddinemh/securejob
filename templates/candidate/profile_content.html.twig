@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-md-6">
+        <p><strong>Prénom:</strong> {{ candidate.firstName }}</p>
+        <p><strong>Nom:</strong> {{ candidate.lastName }}</p>
+        <p><strong>Email:</strong> {{ candidate.user.email }}</p>
+        <p><strong>Téléphone:</strong> {{ candidate.phone }}</p>
+        <p><strong>Adresse:</strong> {{ candidate.address }}, {{ candidate.city }}, {{ candidate.postalCode }}, {{ candidate.country }}</p>
+    </div>
+    <div class="col-md-6">
+        <p><strong>Bio:</strong> {{ candidate.bio }}</p>
+        <p><strong>Compétences:</strong>
+            {% for skill in candidate.skills %}
+                {{ skill.name }}{% if not loop.last %}, {% endif %}
+            {% else %}
+                Aucun
+            {% endfor %}
+        </p>
+    </div>
+</div>

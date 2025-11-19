@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}SecureJob{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{ path('app_candidate_index') }}">
+            <i class="fas fa-briefcase"></i> SecureJob
+        </a>
+
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="{{ path('app_candidate_index') }}">Candidats</a>
+            <a class="nav-link" href="{{ path('app_candidate_profile') }}">Mon Profil</a>
+            <a class="nav-link" href="{{ path('app_candidate_new') }}">Nouveau Candidat</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    {% block body %}{% endblock %}
+</div>
+
+<footer class="bg-dark text-white mt-5 py-4">
+    <div class="container text-center">
+        <p>&copy; 2024 SecureJob - Plateforme de recrutement sécurisée</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

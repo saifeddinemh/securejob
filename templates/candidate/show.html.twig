@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ candidate.firstName }} {{ candidate.lastName }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <a href="{{ path('app_candidate_index') }}" class="btn btn-secondary mb-3">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Profil de {{ candidate.firstName }} {{ candidate.lastName }}</h4>
+                <a href="{{ path('app_candidate_edit', {'id': candidate.id}) }}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Même contenu que profile.html.twig mais pour la visualisation -->
+                {% include 'candidate/profile_content.html.twig' with {'candidate': candidate} %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

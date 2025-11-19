@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Candidats - SecureJob{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4"><i class="fas fa-users"></i> Liste des Candidats</h1>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Tous les candidats</h4>
+            </div>
+            <div class="card-body">
+                {% if candidates|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom Complet</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Ville</th>
+                                <th>Compétences</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for candidate in candidates %}
+                                <tr>
+                                    <td>{{ candidate.id }}</td>
+                                    <td>
+                                        <strong>{{ candidate.firstName }} {{ candidate.lastName }}</strong>
+                                        {% if not candidate.isVisible %}
+                                            <span class="badge bg-warning ms-1">Masqué</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ candidate.user.email }}</td>
+                                    <td>{{ candidate.phone ?? 'N/A' }}</td>
+                                    <td>{{ candidate.city ?? 'N/A' }}</td>
+                                    <td>
+                                        {% for skill in candidate.skills|slice(0, 3) %}
+                                            <span class="badge bg-info">{{ skill.name }}</span>
+                                        {% endfor %}
+                                        {% if candidate.skills|length > 3 %}
+                                            <span class="badge bg-secondary">+{{ candidate.skills|length - 3 }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ path('app_candidate_show', {'id': candidate.id}) }}"
+                                               class="btn btn-outline-primary" title="Voir profil">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_candidate_edit', {'id': candidate.id}) }}"
+                                               class="btn btn-outline-warning" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Aucun candidat trouvé</h4>
+                        <p class="text-muted">Commencez par ajouter le premier candidat</p>
+                        <a href="{{ path('app_candidate_new') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter un candidat
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ path('app_candidate_new') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nouveau Candidat
+            </a>
+        </div>
+    </div>
+{% endblock %}
