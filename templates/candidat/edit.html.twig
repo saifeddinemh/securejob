@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Candidat{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Modifier Candidat</h1>
+
+        {{ form_start(form, {'attr': {'class': 'mt-4'}}) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.telephone) }}
+        {{ form_row(form.dateNaissance) }}
+        {{ form_row(form.adresse) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.portfolioUrl) }}
+        {{ form_row(form.cvFile) }}
+        {{ form_row(form.photoFile) }}
+        {{ form_row(form.competences) }}
+
+        <button class="btn btn-primary mt-3">Mettre à jour</button>
+        <a href="{{ path('candidat_index') }}" class="btn btn-secondary mt-3">Annuler</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

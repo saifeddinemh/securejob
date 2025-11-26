@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails Candidat{% endblock %}
+
+{% block body %}
+    <h1>Détails du Candidat</h1>
+
+    <div class="card mt-4 shadow-sm p-4">
+        <h4>{{ candidat.nom }} {{ candidat.prenom }}</h4>
+        <p><strong>Email:</strong> {{ candidat.email }}</p>
+        <p><strong>Téléphone:</strong> {{ candidat.telephone }}</p>
+        <p><strong>Adresse:</strong> {{ candidat.adresse }}</p>
+        <p><strong>Description:</strong> {{ candidat.description }}</p>
+        <p><strong>Portfolio:</strong> <a href="{{ candidat.portfolioUrl }}" target="_blank">{{ candidat.portfolioUrl }}</a></p>
+        <p>
+            <strong>Compétences:</strong>
+            {% for comp in candidat.competences %}
+                <span class="badge bg-success">{{ comp.nom }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            <strong>CV:</strong>
+            {% if candidat.cvPath %}
+                <a href="{{ asset('uploads/cv/' ~ candidat.cvPath) }}" target="_blank">Télécharger</a>
+            {% else %}
+                Aucun CV
+            {% endif %}
+        </p>
+        <p>
+            <strong>Photo:</strong><br>
+            {% if candidat.photoPath %}
+                <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}" alt="Photo" class="img-thumbnail" width="150">
+            {% else %}
+                Aucune photo
+            {% endif %}
+        </p>
+
+        <a href="{{ path('candidat_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}
