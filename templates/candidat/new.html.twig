@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Créer un nouveau candidat</h1>
 
-    {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+    {{ form_start(form, {'attr': {'enctype':'multipart/form-data', 'class':'row g-3'}}) }}
 
     <div class="mb-3">
         {{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}
@@ -15,24 +15,58 @@
         {{ form_row(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}
         {{ form_row(form.adresse, {'attr': {'class': 'form-control'}}) }}
         {{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.cvFile, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.photoFile, {'attr': {'class': 'form-control'}}) }}
     </div>
 
     <h3>Expériences</h3>
-    {{ form_row(form.experiences) }}
+    <div id="experiences" data-prototype="{{ form_widget(form.experiences.vars.prototype)|e('html_attr') }}">
+        {{ form_widget(form.experiences) }}
+    </div>
+    <button type="button" class="btn btn-primary" id="add-experience">Ajouter une expérience</button>
 
     <h3>Formations</h3>
-    {{ form_row(form.formations) }}
+    <div id="formations" data-prototype="{{ form_widget(form.formations.vars.prototype)|e('html_attr') }}">
+        {{ form_widget(form.formations) }}
+    </div>
+    <button type="button" class="btn btn-primary" id="add-formation">Ajouter une formation</button>
 
     <h3>Langues</h3>
-    {{ form_row(form.langues) }}
+    <div>
+        {{ form_widget(form.langues, {'attr': {'class': 'form-check'}}) }}
+    </div>
 
     <h3>Badges</h3>
-    {{ form_row(form.badges) }}
+    <div>
+        {{ form_widget(form.badges, {'attr': {'class': 'form-check'}}) }}
+    </div>
 
     <h3>Compétences</h3>
-    {{ form_row(form.competences) }}
+    <div>
+        {{ form_widget(form.competences, {'attr': {'class': 'form-check'}}) }}
+    </div>
 
+    <br><br>
     <button class="btn btn-success">Enregistrer</button>
-
     {{ form_end(form) }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function addCollection(buttonId, containerId) {
+                const btn = document.getElementById(buttonId);
+                const container = document.getElementById(containerId);
+                let index = container.children.length;
+
+                btn.addEventListener('click', function() {
+                    const prototype = container.dataset.prototype;
+                    const newForm = prototype.replace(/__name__/g, index);
+                    container.insertAdjacentHTML('beforeend', newForm);
+                    index++;
+                });
+            }
+
+            addCollection('add-experience', 'experiences');
+            addCollection('add-formation', 'formations');
+        });
+    </script>
 {% endblock %}

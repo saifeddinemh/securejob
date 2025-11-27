@@ -1,40 +1,106 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails Candidat{% endblock %}
+{% block title %}Profil de {{ candidat.nom }} {{ candidat.prenom }}{% endblock %}
 
 {% block body %}
-    <h1>Détails du Candidat</h1>
+    <h1>Profil de {{ candidat.nom }} {{ candidat.prenom }}</h1>
 
-    <div class="card mt-4 shadow-sm p-4">
-        <h4>{{ candidat.nom }} {{ candidat.prenom }}</h4>
-        <p><strong>Email:</strong> {{ candidat.email }}</p>
-        <p><strong>Téléphone:</strong> {{ candidat.telephone }}</p>
-        <p><strong>Adresse:</strong> {{ candidat.adresse }}</p>
-        <p><strong>Description:</strong> {{ candidat.description }}</p>
-        <p><strong>Portfolio:</strong> <a href="{{ candidat.portfolioUrl }}" target="_blank">{{ candidat.portfolioUrl }}</a></p>
-        <p>
-            <strong>Compétences:</strong>
-            {% for comp in candidat.competences %}
-                <span class="badge bg-success">{{ comp.nom }}</span>
+    <h2>Informations personnelles</h2>
+    <ul>
+        <li>Email : {{ candidat.email }}</li>
+        <li>Téléphone : {{ candidat.telephone }}</li>
+        <li>Date de naissance : {{ candidat.dateNaissance ? candidat.dateNaissance|date('d/m/Y') : 'N/A' }}</li>
+        <li>Adresse : {{ candidat.adresse }}</li>
+        <li>Description : {{ candidat.description }}</li>
+    </ul>
+
+    {% if candidat.cvPath %}
+        <p>CV : <a href="{{ asset('uploads/cv/' ~ candidat.cvPath) }}" target="_blank">Télécharger</a></p>
+    {% endif %}
+
+    {% if candidat.photoPath %}
+        <p>Photo :</p>
+        <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}" alt="Photo de {{ candidat.nom }}" width="150">
+    {% endif %}
+
+    <h2>Expériences</h2>
+    {% if candidat.experiences|length > 0 %}
+        <ul>
+            {% for exp in candidat.experiences %}
+                <li>
+                    Poste : {{ exp.poste }}<br>
+                    Entreprise : {{ exp.entreprise }}<br>
+                    Période :
+                    {{ exp.dateDebut ? exp.dateDebut|date('d/m/Y') : 'N/A' }}
+                    -
+                    {{ exp.dateFin ? exp.dateFin|date('d/m/Y') : 'Présent' }}
+                </li>
             {% endfor %}
-        </p>
-        <p>
-            <strong>CV:</strong>
-            {% if candidat.cvPath %}
-                <a href="{{ asset('uploads/cv/' ~ candidat.cvPath) }}" target="_blank">Télécharger</a>
-            {% else %}
-                Aucun CV
-            {% endif %}
-        </p>
-        <p>
-            <strong>Photo:</strong><br>
-            {% if candidat.photoPath %}
-                <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}" alt="Photo" class="img-thumbnail" width="150">
-            {% else %}
-                Aucune photo
-            {% endif %}
-        </p>
+        </ul>
+    {% else %}
+        <p>Aucune expérience enregistrée.</p>
+    {% endif %}
 
-        <a href="{{ path('candidat_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
-    </div>
+    <h2>Formations</h2>
+    {% if candidat.formations|length > 0 %}
+        <ul>
+            {% for form in candidat.formations %}
+                <li>
+                    Titre : {{ form.titre }}<br>
+                    Établissement : {{ form.etablissement }}<br>
+                    Période :
+                    {{ form.dateDebut ? form.dateDebut|date('d/m/Y') : 'N/A' }}
+                    -
+                    {{ form.dateFin ? form.dateFin|date('d/m/Y') : 'Présent' }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune formation enregistrée.</p>
+    {% endif %}
+
+    <h2>Langues</h2>
+    {% if candidat.langues|length > 0 %}
+        <ul>
+            {% for langue in candidat.langues %}
+                <li>{{ langue.nom }}{% if langue.description %} - {{ langue.description }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune langue enregistrée.</p>
+    {% endif %}
+
+    <h2>Badges</h2>
+    {% if candidat.badges|length > 0 %}
+        <ul>
+            {% for badge in candidat.badges %}
+                <li>{{ badge.nom }}{% if badge.description %} - {{ badge.description }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun badge enregistré.</p>
+    {% endif %}
+
+    <h2>Compétences</h2>
+    {% if candidat.competences|length > 0 %}
+        <ul>
+            {% for comp in candidat.competences %}
+                <li>{{ comp.nom }}{% if comp.description %} - {{ comp.description }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune compétence enregistrée.</p>
+    {% endif %}
+
+    <a href="{{ path('candidat_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    <a href="{{ path('candidat_edit', {'id': candidat.id}) }}" class="btn btn-primary">Modifier</a>
+
+    <!-- Formulaire suppression -->
+    <form method="post" action="{{ path('candidat_delete', {'id': candidat.id}) }}"
+          onsubmit="return confirm('Voulez-vous vraiment supprimer ce candidat ?');"
+          style="display:inline-block;">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidat.id) }}">
+        <button class="btn btn-danger">Supprimer</button>
+    </form>
+
 {% endblock %}

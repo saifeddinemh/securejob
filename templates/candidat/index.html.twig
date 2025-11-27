@@ -1,66 +1,45 @@
-{# templates/candidat/new.html.twig #}
-
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un candidat{% endblock %}
+{% block title %}Liste des candidats{% endblock %}
 
 {% block body %}
-    <h1>Créer un candidat</h1>
+    <h1>Liste des candidats</h1>
 
-    {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+    <a href="{{ path('candidat_new') }}" class="btn btn-success mb-3">Ajouter un candidat</a>
 
-    <div class="col-md-6">
-        {{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}
-    </div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for candidat in candidats %}
+            <tr>
+                <td>{{ candidat.nom }}</td>
+                <td>{{ candidat.prenom }}</td>
+                <td>{{ candidat.email }}</td>
+                <td>{{ candidat.telephone }}</td>
+                <td>
+                    <a href="{{ path('candidat_show', {'id': candidat.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                    <a href="{{ path('candidat_edit', {'id': candidat.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
 
-    <div class="col-md-6">
-        {{ form_row(form.prenom, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <div class="col-md-6">
-        {{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <div class="col-md-6">
-        {{ form_row(form.telephone, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <div class="col-md-6">
-        {{ form_row(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <div class="col-md-12">
-        {{ form_row(form.adresse, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <div class="col-md-12">
-        {{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <h3>Expériences</h3>
-    <div class="col-md-12">
-        {{ form_row(form.experiences) }}
-    </div>
-
-    <h3>Formations</h3>
-    <div class="col-md-12">
-        {{ form_row(form.formations) }}
-    </div>
-
-    <h3>Langues</h3>
-    <div class="col-md-12">
-        {{ form_row(form.langues) }}
-    </div>
-
-    <h3>Badges</h3>
-    <div class="col-md-12">
-        {{ form_row(form.badges) }}
-    </div>
-
-    <div class="col-12">
-        <button type="submit" class="btn btn-success">Enregistrer</button>
-    </div>
-
-    {{ form_end(form) }}
-
+                    {# Formulaire suppression #}
+                    <form method="post" action="{{ path('candidat_delete', {'id': candidat.id}) }}" style="display:inline-block;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce candidat ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidat.id) }}">
+                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucun candidat trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

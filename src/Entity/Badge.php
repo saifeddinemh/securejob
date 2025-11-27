@@ -7,26 +7,77 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BadgeRepository::class)]
 class Badge
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type:"integer")]
-    private $id;
+    #[ORM\Column(type: "integer")]
+    private ?int $id = null;
 
-    #[ORM\Column(type:"string", length:255)]
-    private $nom;
+    #[ORM\Column(type: "string", length: 255)]
+    private ?string $nom = null;
 
-    #[ORM\Column(type:"string", length:255, nullable:true)]
-    private $description;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\ManyToMany(targetEntity:Candidat::class, mappedBy:"badges")]
-    private $candidats;
+    #[ORM\ManyToMany(targetEntity: Candidat::class, mappedBy: "badges")]
+    private Collection $candidats;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->candidats = new ArrayCollection();
     }
 
-    // getters et setters
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Candidat>
+     */
+    public function getCandidats(): Collection
+    {
+        return $this->candidats;
+    }
+
+    public function addCandidat(Candidat $candidat): static
+    {
+        if (!$this->candidats->contains($candidat)) {
+            $this->candidats->add($candidat);
+            $candidat->addBadge($this);
+        }
+        return $this;
+    }
+
+    public function removeCandidat(Candidat $candidat): static
+    {
+        if ($this->candidats->removeElement($candidat)) {
+            $candidat->removeBadge($this);
+        }
+        return $this;
+    }
 }

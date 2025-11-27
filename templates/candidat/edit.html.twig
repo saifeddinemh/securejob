@@ -3,24 +3,61 @@
 {% block title %}Modifier Candidat{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1>Modifier Candidat</h1>
+    <h1>Modifier le candidat</h1>
 
-        {{ form_start(form, {'attr': {'class': 'mt-4'}}) }}
-        {{ form_row(form.nom) }}
-        {{ form_row(form.prenom) }}
-        {{ form_row(form.email) }}
-        {{ form_row(form.telephone) }}
-        {{ form_row(form.dateNaissance) }}
-        {{ form_row(form.adresse) }}
-        {{ form_row(form.description) }}
-        {{ form_row(form.portfolioUrl) }}
-        {{ form_row(form.cvFile) }}
-        {{ form_row(form.photoFile) }}
-        {{ form_row(form.competences) }}
+    {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
 
-        <button class="btn btn-primary mt-3">Mettre à jour</button>
-        <a href="{{ path('candidat_index') }}" class="btn btn-secondary mt-3">Annuler</a>
-        {{ form_end(form) }}
+    <div class="mb-3">
+        {{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.prenom, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.telephone, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.adresse, {'attr': {'class': 'form-control'}}) }}
+        {{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}
     </div>
+
+    {% set collections = ['experiences','formations','langues','badges','competences'] %}
+
+    {% for collection in collections %}
+        <h3>{{ collection|capitalize }}</h3>
+        {% set colForm = attribute(form, collection) %}
+        <div id="{{ collection }}"
+            {% if colForm.vars is defined and colForm.vars.prototype is defined %}
+                data-prototype="{{ form_widget(colForm.vars.prototype)|e('html_attr') }}"
+            {% endif %}
+        >
+            {{ form_widget(colForm) }}
+        </div>
+        <button type="button" class="btn btn-primary mb-3" id="add-{{ collection }}">Ajouter {{ collection|capitalize|slice(0, -1) }}</button>
+    {% endfor %}
+
+    <button class="btn btn-success">Modifier</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('candidat_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function addCollection(buttonId, containerId) {
+                const btn = document.getElementById(buttonId);
+                const container = document.getElementById(containerId);
+                let index = container.children.length;
+
+                if (!btn || !container) return;
+
+                btn.addEventListener('click', function() {
+                    const prototype = container.dataset.prototype;
+                    if (!prototype) return;
+                    const newForm = prototype.replace(/__name__/g, index);
+                    container.insertAdjacentHTML('beforeend', newForm);
+                    index++;
+                });
+            }
+
+            ['experiences','formations','langues','badges','competences'].forEach(function(name) {
+                addCollection('add-' + name, name);
+            });
+        });
+    </script>
 {% endblock %}

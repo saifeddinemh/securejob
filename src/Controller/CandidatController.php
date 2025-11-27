@@ -3,8 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Candidat;
+use App\Entity\Experience;
+use App\Entity\Formation;
+use App\Entity\Langue;
 use App\Form\CandidatType;
 use Doctrine\ORM\EntityManagerInterface;
+use Smalot\PdfParser\Parser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,40 +35,101 @@ class CandidatController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Upload CV
+            // --- Upload CV ---
             $cvFile = $form->get('cvFile')->getData();
             if ($cvFile) {
                 $newFilename = uniqid().'_'.$cvFile->getClientOriginalName();
+                $cvPath = $this->getParameter('cv_directory').'/'.$newFilename;
+
                 try {
-                    $cvFile->move(
-                        $this->getParameter('cv_directory'),
-                        $newFilename
-                    );
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors de l\'upload du CV.');
+                    $cvFile->move($this->getParameter('cv_directory'), $newFilename);
+                    $candidat->setCvPath($newFilename);
+
+                    // Lecture du contenu
+                    $extension = strtolower($cvFile->getClientOriginalExtension());
+                    $text = '';
+                    if ($extension === 'pdf') {
+                        $parser = new Parser();
+                        $pdf = $parser->parseFile($cvPath);
+                        $text = $pdf->getText();
+                    } else {
+                        $text = file_get_contents($cvPath);
+                    }
+
+                    // Extraction automatique
+                    $lines = explode("\n", $text);
+                    $section = '';
+                    foreach ($lines as $line) {
+                        $line = trim($line);
+                        if (empty($line)) continue;
+
+                        if (stripos($line, 'Expériences:') !== false) { $section='experience'; continue; }
+                        if (stripos($line, 'Formations:') !== false) { $section='formation'; continue; }
+                        if (stripos($line, 'Langues:') !== false) { $section='langue'; continue; }
+
+                        switch ($section) {
+                            case 'experience':
+                                $exp = new Experience();
+                                if (preg_match('/(.+) chez (.+)/i', $line, $m)) {
+                                    $exp->setPoste(trim($m[1]));
+                                    $exp->setEntreprise(trim($m[2]));
+                                } else {
+                                    $exp->setPoste($line);
+                                    $exp->setEntreprise('Entreprise inconnue');
+                                }
+                                $exp->setDateDebut(new \DateTime());
+                                $exp->setDateFin(null);
+                                $candidat->addExperience($exp);
+                                break;
+
+                            case 'formation':
+                                $formation = new Formation();
+                                $formation->setTitre($line);
+                                $formation->setEtablissement('Inconnu');
+                                $formation->setDateDebut(new \DateTime());
+                                $formation->setDateFin(null);
+                                $candidat->addFormation($formation);
+                                break;
+
+                            case 'langue':
+                                $langue = $em->getRepository(Langue::class)->findOneBy(['nom'=>trim($line)]);
+                                if ($langue) { $candidat->addLangue($langue); }
+                                break;
+
+                            default:
+                                if (stripos($line,'Nom:')===0) $candidat->setNom(trim(substr($line,4)));
+                                if (stripos($line,'Prénom:')===0) $candidat->setPrenom(trim(substr($line,7)));
+                                if (stripos($line,'Email:')===0) $candidat->setEmail(trim(substr($line,6)));
+                                if (stripos($line,'Téléphone:')===0) $candidat->setTelephone(trim(substr($line,10)));
+                                if (stripos($line,'Date de naissance:')===0) {
+                                    try { $candidat->setDateNaissance(new \DateTime(trim(substr($line,18)))); }
+                                    catch (\Exception $e) { $candidat->setDateNaissance(new \DateTime('2000-01-01')); }
+                                }
+                                if (stripos($line,'Adresse:')===0) $candidat->setAdresse(trim(substr($line,8)));
+                                break;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $this->addFlash('warning', 'Impossible de lire le CV pour extraction automatique: '.$e->getMessage());
                 }
-                $candidat->setCvPath($newFilename);
             }
 
-            // Upload Photo
+            // --- Upload Photo ---
             $photoFile = $form->get('photoFile')->getData();
             if ($photoFile) {
                 $newFilename = uniqid().'_'.$photoFile->getClientOriginalName();
                 try {
-                    $photoFile->move(
-                        $this->getParameter('photo_directory'),
-                        $newFilename
-                    );
+                    $photoFile->move($this->getParameter('photo_directory'), $newFilename);
+                    $candidat->setPhotoPath($newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors de l\'upload de la photo.');
                 }
-                $candidat->setPhotoPath($newFilename);
             }
 
             $em->persist($candidat);
             $em->flush();
-
             $this->addFlash('success', 'Candidat ajouté avec succès !');
+
             return $this->redirectToRoute('candidat_index');
         }
 
@@ -88,36 +153,6 @@ class CandidatController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Upload CV
-            $cvFile = $form->get('cvFile')->getData();
-            if ($cvFile) {
-                $newFilename = uniqid().'_'.$cvFile->getClientOriginalName();
-                try {
-                    $cvFile->move(
-                        $this->getParameter('cv_directory'),
-                        $newFilename
-                    );
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors de l\'upload du CV.');
-                }
-                $candidat->setCvPath($newFilename);
-            }
-
-            // Upload Photo
-            $photoFile = $form->get('photoFile')->getData();
-            if ($photoFile) {
-                $newFilename = uniqid().'_'.$photoFile->getClientOriginalName();
-                try {
-                    $photoFile->move(
-                        $this->getParameter('photo_directory'),
-                        $newFilename
-                    );
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors de l\'upload de la photo.');
-                }
-                $candidat->setPhotoPath($newFilename);
-            }
-
             $em->flush();
             $this->addFlash('success', 'Candidat modifié avec succès !');
             return $this->redirectToRoute('candidat_index');
@@ -129,7 +164,8 @@ class CandidatController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['POST'])]
+    // ✅ Route suppression distincte
+    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Candidat $candidat, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete'.$candidat->getId(), $request->request->get('_token'))) {
