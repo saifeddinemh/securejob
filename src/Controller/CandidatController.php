@@ -6,6 +6,8 @@ use App\Entity\Candidat;
 use App\Entity\Experience;
 use App\Entity\Formation;
 use App\Entity\Langue;
+use App\Entity\Competence;
+use App\Entity\Badge;
 use App\Form\CandidatType;
 use Doctrine\ORM\EntityManagerInterface;
 use Smalot\PdfParser\Parser;
@@ -19,11 +21,46 @@ use Symfony\Component\Routing\Annotation\Route;
 class CandidatController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(Request $request, EntityManagerInterface $em): Response
     {
-        $candidats = $em->getRepository(Candidat::class)->findAll();
+        // Récupération de toutes les compétences et badges pour les filtres
+        $competences = $em->getRepository(Competence::class)->findAll();
+        $badges = $em->getRepository(Badge::class)->findAll();
+
+        // Filtres GET
+        $selectedCompetence = $request->query->get('competence');
+        $selectedBadge = $request->query->get('badge');
+        $search = $request->query->get('search');
+
+        // QueryBuilder
+        $qb = $em->getRepository(Candidat::class)->createQueryBuilder('c');
+
+        if ($selectedCompetence) {
+            $qb->join('c.competences', 'comp')
+                ->andWhere('comp.id = :compId')
+                ->setParameter('compId', $selectedCompetence);
+        }
+
+        if ($selectedBadge) {
+            $qb->join('c.badges', 'b')
+                ->andWhere('b.id = :badgeId')
+                ->setParameter('badgeId', $selectedBadge);
+        }
+
+        if ($search) {
+            $qb->andWhere('c.nom LIKE :search OR c.prenom LIKE :search OR c.email LIKE :search')
+                ->setParameter('search', '%'.$search.'%');
+        }
+
+        $candidats = $qb->getQuery()->getResult();
+
         return $this->render('candidat/index.html.twig', [
-            'candidats' => $candidats
+            'candidats' => $candidats,
+            'competences' => $competences,
+            'badges' => $badges,
+            'selectedCompetence' => $selectedCompetence,
+            'selectedBadge' => $selectedBadge,
+            'search' => $search,
         ]);
     }
 
@@ -35,19 +72,20 @@ class CandidatController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // --- Upload CV ---
+
+            // Upload CV
             $cvFile = $form->get('cvFile')->getData();
             if ($cvFile) {
                 $newFilename = uniqid().'_'.$cvFile->getClientOriginalName();
-                $cvPath = $this->getParameter('cv_directory').'/'.$newFilename;
-
                 try {
                     $cvFile->move($this->getParameter('cv_directory'), $newFilename);
                     $candidat->setCvPath($newFilename);
 
-                    // Lecture du contenu
+                    // Extraction automatique du contenu
+                    $cvPath = $this->getParameter('cv_directory').'/'.$newFilename;
                     $extension = strtolower($cvFile->getClientOriginalExtension());
                     $text = '';
+
                     if ($extension === 'pdf') {
                         $parser = new Parser();
                         $pdf = $parser->parseFile($cvPath);
@@ -56,7 +94,6 @@ class CandidatController extends AbstractController
                         $text = file_get_contents($cvPath);
                     }
 
-                    // Extraction automatique
                     $lines = explode("\n", $text);
                     $section = '';
                     foreach ($lines as $line) {
@@ -109,12 +146,13 @@ class CandidatController extends AbstractController
                                 break;
                         }
                     }
+
                 } catch (\Exception $e) {
-                    $this->addFlash('warning', 'Impossible de lire le CV pour extraction automatique: '.$e->getMessage());
+                    $this->addFlash('warning', 'Impossible de lire le CV: '.$e->getMessage());
                 }
             }
 
-            // --- Upload Photo ---
+            // Upload Photo
             $photoFile = $form->get('photoFile')->getData();
             if ($photoFile) {
                 $newFilename = uniqid().'_'.$photoFile->getClientOriginalName();
@@ -164,7 +202,6 @@ class CandidatController extends AbstractController
         ]);
     }
 
-    // ✅ Route suppression distincte
     #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Candidat $candidat, EntityManagerInterface $em): Response
     {

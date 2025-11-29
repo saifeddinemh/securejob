@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center text-purple mb-4">Simulateur d'entretiens</h1>
+        <p class="text-center">Choisissez un candidat depuis la liste pour commencer le simulateur individuel.</p>
+        <a href="{{ path('candidat_index') }}" class="btn btn-mauve d-block mx-auto w-25">Liste des candidats</a>
+    </div>
+{% endblock %}

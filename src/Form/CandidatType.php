@@ -24,58 +24,106 @@ class CandidatType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            // Infos personnelles
-            ->add('nom', TextType::class)
-            ->add('prenom', TextType::class)
-            ->add('email', EmailType::class)
-            ->add('telephone', TextType::class, ['required' => false])
-            ->add('dateNaissance', DateType::class, ['widget' => 'single_text', 'required' => false])
-            ->add('adresse', TextType::class, ['required' => false])
-            ->add('description', TextareaType::class, ['required' => false])
-            ->add('cvFile', FileType::class, ['mapped' => false, 'required' => false])
-            ->add('photoFile', FileType::class, ['mapped' => false, 'required' => false])
+            // -------------------------------------------------------------
+            // INFOS PERSONNELLES
+            // -------------------------------------------------------------
+            ->add('nom', TextType::class, [
+                'label' => 'Nom',
+            ])
+            ->add('prenom', TextType::class, [
+                'label' => 'Prénom',
+            ])
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
+            ])
+            ->add('telephone', TextType::class, [
+                'required' => false,
+                'label' => 'Téléphone',
+            ])
+            ->add('dateNaissance', DateType::class, [
+                'widget' => 'single_text',
+                'required' => false,
+                'label' => 'Date de naissance',
+            ])
+            ->add('adresse', TextType::class, [
+                'required' => false,
+                'label' => 'Adresse',
+            ])
+            ->add('description', TextareaType::class, [
+                'required' => false,
+                'label' => 'Description / Bio',
+            ])
 
-            // Expériences
+            // -------------------------------------------------------------
+            // UPLOADS
+            // -------------------------------------------------------------
+            ->add('cvFile', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => 'CV (PDF)',
+            ])
+            ->add('photoFile', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => 'Photo de profil',
+            ])
+
+            // -------------------------------------------------------------
+            // EXPERIENCES PROFESSIONNELLES
+            // -------------------------------------------------------------
             ->add('experiences', CollectionType::class, [
                 'entry_type' => ExperienceType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
+                'label' => 'Expériences',
             ])
 
-            // Formations
+            // -------------------------------------------------------------
+            // FORMATIONS
+            // -------------------------------------------------------------
             ->add('formations', CollectionType::class, [
                 'entry_type' => FormationType::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
+                'label' => 'Formations',
             ])
 
-            // Langues (sélection d’entités existantes)
+            // -------------------------------------------------------------
+            // LANGUES
+            // -------------------------------------------------------------
             ->add('langues', EntityType::class, [
                 'class' => Langue::class,
                 'choice_label' => 'nom',
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
+                'label' => 'Langues parlées',
             ])
 
-            // Badges (sélection d’entités existantes)
+            // -------------------------------------------------------------
+            // BADGES (Certifications)
+            // -------------------------------------------------------------
             ->add('badges', EntityType::class, [
                 'class' => Badge::class,
                 'choice_label' => 'nom',
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
+                'label' => 'Badges & Certifications',
             ])
 
-            // Compétences (sélection d’entités existantes)
+            // -------------------------------------------------------------
+            // COMPÉTENCES
+            // -------------------------------------------------------------
             ->add('competences', EntityType::class, [
                 'class' => Competence::class,
                 'choice_label' => 'nom',
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
+                'label' => 'Compétences',
             ]);
     }
 

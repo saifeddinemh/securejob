@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\BadgeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BadgeRepository::class)]
@@ -12,22 +10,14 @@ class Badge
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
-
-    #[ORM\ManyToMany(targetEntity: Candidat::class, mappedBy: "badges")]
-    private Collection $candidats;
-
-    public function __construct()
-    {
-        $this->candidats = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -53,31 +43,6 @@ class Badge
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Candidat>
-     */
-    public function getCandidats(): Collection
-    {
-        return $this->candidats;
-    }
-
-    public function addCandidat(Candidat $candidat): static
-    {
-        if (!$this->candidats->contains($candidat)) {
-            $this->candidats->add($candidat);
-            $candidat->addBadge($this);
-        }
-        return $this;
-    }
-
-    public function removeCandidat(Candidat $candidat): static
-    {
-        if ($this->candidats->removeElement($candidat)) {
-            $candidat->removeBadge($this);
-        }
         return $this;
     }
 }

@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur d'entretiens{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center text-purple mb-4">Simulateur d'entretiens pour {{ candidat.nom }} {{ candidat.prenom }}</h1>
+
+        <div class="card p-3 mb-3">
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label>Métier :</label>
+                        <input type="text" name="metier" class="form-control" value="{{ selectedMetier }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Niveau :</label>
+                        <input type="text" name="niveau" class="form-control" value="{{ selectedNiveau }}">
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button class="btn btn-mauve">Commencer</button>
+                </div>
+            </form>
+        </div>
+
+        {% if questions|length > 0 %}
+            <form method="get">
+                <input type="hidden" name="metier" value="{{ selectedMetier }}">
+                <input type="hidden" name="niveau" value="{{ selectedNiveau }}">
+                {% for q in questions %}
+                    <div class="card mb-2 p-2">
+                        <label><strong>Q{{ loop.index }}:</strong> {{ q.question }}</label>
+                        {% if q.type == 'text' %}
+                            <input type="text" name="answers[{{ loop.index0 }}]" class="form-control" value="{{ answers[loop.index0]|default('') }}">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="text-end mt-2">
+                    <button class="btn btn-mauve">Envoyer les réponses</button>
+                </div>
+            </form>
+        {% endif %}
+
+        {% if feedback|length > 0 %}
+            <div class="card p-3 mt-3">
+                <h4>Feedback :</h4>
+                <ul>
+                    {% for f in feedback %}
+                        <li>{{ f }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
