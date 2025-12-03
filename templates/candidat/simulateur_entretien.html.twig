@@ -1,0 +1,257 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulation d'Entretien - {{ candidat.nom }} - SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .entretien-container {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(142, 45, 226, 0.15);
+            border: 2px solid #e0d4f7;
+        }
+        .candidat-info {
+            background: linear-gradient(135deg, #f3e8ff, #e0d4f7);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 5px solid #8e2de2;
+        }
+        .question-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0d4f7;
+            box-shadow: 0 3px 10px rgba(142, 45, 226, 0.08);
+        }
+        .question-type {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .type-technique { background: #e3f2fd; color: #1565c0; }
+        .type-comportementale { background: #f3e5f5; color: #7b1fa2; }
+        .type-scenario { background: #e8f5e9; color: #2e7d32; }
+        .timer {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #8e2de2;
+            text-align: center;
+        }
+        .feedback-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .improvement-tip {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: #8e2de2;">
+                🎤 Simulation d'Entretien
+            </h1>
+            <div class="timer" id="timer">00:00</div>
+        </div>
+
+        <!-- Info candidat -->
+        <div class="candidat-info mb-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 style="color: #4a00e0;">{{ candidat.nom }} {{ candidat.prenom }}</h4>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Métier :</strong> {{ metier|default('Développeur Web') }}
+                        </div>
+                        <div class="col-6">
+                            <strong>Niveau :</strong>
+                            <span class="badge" style="background: linear-gradient(135deg, #8e2de2, #4a00e0);">
+                            {{ niveau|default('intermediaire')|upper }}
+                        </span>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <strong>Compétences :</strong>
+                            {% for comp in candidat.competences %}
+                                <span class="badge bg-light text-dark me-1">{{ comp.nom }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    {% if candidat.photoPath %}
+                        <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}"
+                             alt="Photo"
+                             style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #8e2de2;">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if resultats %}
+            <!-- Résultats -->
+            <div class="entretien-container mb-4">
+                <h3 class="text-center mb-4" style="color: #4a00e0;">📊 Résultats de l'Entretien</h3>
+
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-4 text-center">
+                        <div class="score-display">{{ resultats.score }}%</div>
+                        <div class="text-muted">Score final</div>
+                    </div>
+                    <div class="col-md-8">
+                        <h4 style="color: #8e2de2;">{{ resultats.feedback.titre }}</h4>
+                        <p>{{ resultats.feedback.message }}</p>
+                    </div>
+                </div>
+
+                <!-- Détails des questions -->
+                <h5 style="color: #4a00e0;">📝 Détail des réponses</h5>
+                {% for detail in resultats.details %}
+                    <div class="question-card">
+                        <div class="d-flex justify-content-between">
+                            <strong>Question {{ loop.index }}</strong>
+                            <span class="badge" style="background: {% if '✓' in detail.note %}#4caf50{% elseif '✗' in detail.note %}#f44336{% else %}#ff9800{% endif %};">
+                            {{ detail.note }}
+                        </span>
+                        </div>
+                        <div class="improvement-tip mt-2">
+                            {{ detail.feedback }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- Suggestions d'amélioration -->
+                <div class="feedback-card mt-4">
+                    <h5 style="color: #2e7d32;">💡 Suggestions d'amélioration</h5>
+                    <ul>
+                        {% for suggestion in resultats.feedback.suggestions %}
+                            <li>{{ suggestion }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ path('simulateur_entretien', {'id': candidat.id}) }}" class="btn btn-custom me-2">
+                        🔁 Réessayer
+                    </a>
+                    <a href="{{ path('feedback_ia', {'id': candidat.id}) }}" class="btn btn-custom">
+                        🤖 Voir l'analyse IA détaillée
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <!-- Formulaire d'entretien -->
+            <div class="entretien-container">
+                <div class="alert alert-info" style="background: #e3f2fd; border-color: #2196f3;">
+                    <strong>Instructions :</strong> Répondez aux questions comme dans un véritable entretien.
+                    Prenez votre temps et soyez le plus précis possible. Le chronomètre est lancé !
+                </div>
+
+                {{ form_start(form) }}
+
+                <!-- Questions techniques -->
+                <h4 class="mt-4" style="color: #8e2de2;">💻 Questions Techniques</h4>
+                {% for question in questionsDisponibles.technique %}
+                    <div class="question-card">
+                        <span class="question-type type-technique">TECHNIQUE</span>
+                        <h6>{{ question }}</h6>
+                        {{ form_row(attribute(form, 'question_technique_' ~ loop.index0), {
+                            'label': false,
+                            'attr': {
+                                'placeholder': 'Votre réponse ici...',
+                                'class': 'form-control mt-2',
+                                'rows': 4
+                            }
+                        }) }}
+                    </div>
+                {% endfor %}
+
+                <!-- Questions comportementales -->
+                <h4 class="mt-4" style="color: #8e2de2;">🎭 Questions Comportementales</h4>
+                {% for question in questionsDisponibles.comportementale %}
+                    <div class="question-card">
+                        <span class="question-type type-comportementale">COMPORTEMENTALE</span>
+                        <h6>{{ question }}</h6>
+                        {{ form_row(attribute(form, 'question_comportementale_' ~ loop.index0), {
+                            'label': false,
+                            'attr': {
+                                'placeholder': 'Décrivez une situation concrète...',
+                                'class': 'form-control mt-2',
+                                'rows': 5
+                            }
+                        }) }}
+                    </div>
+                {% endfor %}
+
+                <!-- Bouton de soumission -->
+                <div class="text-center mt-4">
+                    {{ form_row(form.submit, {
+                        'attr': {
+                            'class': 'btn btn-custom btn-lg',
+                            'style': 'background: linear-gradient(135deg, #8e2de2, #4a00e0); padding: 12px 40px;'
+                        }
+                    }) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ path('candidat_show', {'id': candidat.id}) }}" class="btn btn-custom">
+                ← Retour au profil
+            </a>
+            <div>
+                <a href="{{ path('evaluation_technique', {'id': candidat.id}) }}" class="btn btn-custom me-2">
+                    📊 Tests techniques
+                </a>
+                <a href="{{ path('simulateur_index') }}" class="btn btn-custom">
+                    🏠 Accueil simulateur
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timer
+        let seconds = 0;
+        let minutes = 0;
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            seconds++;
+            if (seconds >= 60) {
+                minutes++;
+                seconds = 0;
+            }
+            timerElement.textContent =
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        setInterval(updateTimer, 1000);
+    </script>
+{% endblock %}

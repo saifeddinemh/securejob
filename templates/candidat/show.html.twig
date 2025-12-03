@@ -109,6 +109,12 @@
                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidat.id) }}">
                 <button class="btn btn-danger">Supprimer</button>
             </form>
+
+            <!-- ⭐⭐⭐ BOUTON CORRIGÉ ⭐⭐⭐ -->
+            <a href="{{ path('simulateur_entretien', {'id': candidat.id}) }}"
+               class="btn btn-simulateur">
+                🎤 Simuler un entretien
+            </a>
         </div>
 
     </div>

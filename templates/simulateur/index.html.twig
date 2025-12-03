@@ -1,0 +1,269 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur d'Entretien - SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 60px 0;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            height: 100%;
+            border: 2px solid #e0d4f7;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(142, 45, 226, 0.2);
+            border-color: #8e2de2;
+        }
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        .feature-badge {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin: 5px;
+        }
+        .stats-box {
+            background: linear-gradient(135deg, #f3e8ff, #e0d4f7);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8e2de2;
+            display: block;
+        }
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="display-4 mb-3">🎤 SIMULATEUR D'ENTRETIENS</h1>
+            <p class="lead mb-4">Entraînez-vous aux entretiens professionnels avec nos 4 modules interactifs</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="stats-box">
+                                <span class="stats-number">150+</span>
+                                <span class="stats-label">Questions</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stats-box">
+                                <span class="stats-number">4</span>
+                                <span class="stats-label">Modules</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stats-box">
+                                <span class="stats-number">100%</span>
+                                <span class="stats-label">Pratique</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stats-box">
+                                <span class="stats-number">🤖</span>
+                                <span class="stats-label">Feedback IA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <h2 class="text-center mb-5" style="color: #4a00e0;">✨ Nos 4 Fonctionnalités Complètes</h2>
+
+        <div class="row g-4">
+            <!-- Module 1: Entretien Technique -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #8e2de2;">💻</div>
+                    <h4 style="color: #4a00e0;">Entraînement Technique</h4>
+                    <p class="text-muted"><strong>Questions types par métier et niveau d'expérience</strong></p>
+
+                    <div class="mb-3">
+                        <span class="feature-badge">15 Métiers</span>
+                        <span class="feature-badge">3 Niveaux</span>
+                        <span class="feature-badge">Questions types</span>
+                    </div>
+
+                    <ul class="text-start small mb-4">
+                        <li>Développeur Web (Junior/Senior)</li>
+                        <li>Chef de Projet IT</li>
+                        <li>Designer UX/UI</li>
+                        <li>Marketing Digital</li>
+                        <li>Data Analyst</li>
+                    </ul>
+
+                    <div class="text-center">
+                        <!-- CORRECTION ICI : candidat_simulateur_technique -->
+                        <a href="{{ path('candidat_simulateur_technique') }}" class="btn btn-custom w-100">
+                            🚀 Commencer l'entraînement
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module 2: Simulations Comportementales -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #4a00e0;">🎭</div>
+                    <h4 style="color: #8e2de2;">Simulations Comportementales</h4>
+                    <p class="text-muted"><strong>Mises en situation avec feedback personnalisé</strong></p>
+
+                    <div class="mb-3">
+                        <span class="feature-badge">Scénarios réels</span>
+                        <span class="feature-badge">Feedback détaillé</span>
+                        <span class="feature-badge">Cas pratiques</span>
+                    </div>
+
+                    <ul class="text-start small mb-4">
+                        <li>Gestion de conflits en équipe</li>
+                        <li>Prise de décision sous pression</li>
+                        <li>Leadership et management</li>
+                        <li>Communication difficile</li>
+                        <li>Résolution de problèmes</li>
+                    </ul>
+
+                    <div class="text-center">
+                        <!-- CORRECTION ICI : candidat_simulateur_comportemental -->
+                        <a href="{{ path('candidat_simulateur_comportemental') }}" class="btn btn-custom w-100">
+                            🎬 Démarrer une simulation
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module 3: Évaluations Techniques -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #ff8a00;">📊</div>
+                    <h4 style="color: #4a00e0;">Tests Techniques</h4>
+                    <p class="text-muted"><strong>Tests adaptatifs avec correction automatique</strong></p>
+
+                    <div class="mb-3">
+                        <span class="feature-badge">QCM & Questions ouvertes</span>
+                        <span class="feature-badge">Correction auto</span>
+                        <span class="feature-badge">Score instantané</span>
+                    </div>
+
+                    <ul class="text-start small mb-4">
+                        <li>Frontend (HTML/CSS/JS)</li>
+                        <li>Backend (PHP/Symfony)</li>
+                        <li>Bases de données (SQL)</li>
+                        <li>DevOps (Docker/Git)</li>
+                        <li>Architecture logicielle</li>
+                    </ul>
+
+                    <div class="text-center">
+                        <!-- CORRECTION ICI : candidat_simulateur_test -->
+                        <a href="{{ path('candidat_simulateur_test') }}" class="btn btn-custom w-100">
+                            📝 Passer un test
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module 4: Feedback IA -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="color: #00b894;">🤖</div>
+                    <h4 style="color: #4a00e0;">Feedback par IA</h4>
+                    <p class="text-muted"><strong>Analyse des réponses et suggestions d'amélioration</strong></p>
+
+                    <div class="mb-3">
+                        <span class="feature-badge">Analyse intelligente</span>
+                        <span class="feature-badge">Suggestions perso</span>
+                        <span class="feature-badge">Amélioration continue</span>
+                    </div>
+
+                    <ul class="text-start small mb-4">
+                        <li>Analyse de la structure</li>
+                        <li>Détection des mots-clés</li>
+                        <li>Évaluation de la clarté</li>
+                        <li>Conseils personnalisés</li>
+                        <li>Plan d'amélioration</li>
+                    </ul>
+
+                    <div class="text-center">
+                        <!-- CORRECTION ICI : candidat_simulateur_feedback -->
+                        <a href="{{ path('candidat_simulateur_feedback') }}" class="btn btn-custom w-100">
+                            🧠 Analyser avec l'IA
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment ça marche -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card" style="border: 2px solid #8e2de2; border-radius: 15px;">
+                    <div class="card-body">
+                        <h4 class="text-center mb-4" style="color: #4a00e0;">📋 Comment utiliser le simulateur ?</h4>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div style="font-size: 2.5rem; color: #8e2de2;">1️⃣</div>
+                                <h6>Choisissez un module</h6>
+                                <p class="small">Sélectionnez l'entraînement qui correspond à vos besoins</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div style="font-size: 2.5rem; color: #8e2de2;">2️⃣</div>
+                                <h6>Répondez aux questions</h6>
+                                <p class="small">Comme dans un véritable entretien d'embauche</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div style="font-size: 2.5rem; color: #8e2de2;">3️⃣</div>
+                                <h6>Recevez votre évaluation</h6>
+                                <p class="small">Score détaillé et feedback personnalisé</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div style="font-size: 2.5rem; color: #8e2de2;">4️⃣</div>
+                                <h6>Améliorez-vous</h6>
+                                <p class="small">Suivez les conseils et retentez l'exercice</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="text-center mt-5">
+            <a href="{{ path('candidat_index') }}" class="btn btn-custom btn-lg me-3">
+                ← Retour aux candidats
+            </a>
+            <a href="{{ path('candidat_new') }}" class="btn btn-simulateur btn-lg">
+                📁 Ajouter un candidat
+            </a>
+        </div>
+    </div>
+{% endblock %}

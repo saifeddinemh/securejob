@@ -1,0 +1,330 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tests Techniques - Simulateur SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .test-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e0d4f7;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.08);
+        }
+        .section-header {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .option-label {
+            display: block;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-label:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        .option-label.selected {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            font-weight: bold;
+        }
+        .code-input {
+            font-family: 'Courier New', monospace;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 150px;
+            resize: vertical;
+        }
+        .correction-container {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 15px;
+            padding: 30px;
+            border: 3px solid #4caf50;
+            margin-top: 30px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .result-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8e2de2;
+            display: block;
+        }
+        .result-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .explication-box {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #ff9800;
+        }
+        .timer {
+            background: linear-gradient(135deg, #ff8a00, #ff5e00);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: #8e2de2;">
+                📊 Tests Techniques Adaptatifs
+            </h1>
+            <div class="timer" id="timer">⏱️ 30:00</div>
+        </div>
+
+        {% if not correction %}
+            <!-- Formulaire du test -->
+            <div class="alert alert-info" style="background: #e3f2fd; border-color: #2196f3;">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5>🎯 Test technique complet</h5>
+                        <p class="mb-0">Répondez aux questions ci-dessous. Le test couvre plusieurs domaines techniques avec des questions QCM et ouvertes.</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="small">
+                            <strong>Durée :</strong> 30 minutes<br>
+                            <strong>Questions :</strong> {{ tests|reduce((total, section) => total + section|length, 0) }}<br>
+                            <strong>Notation :</strong> Automatique
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" id="testForm">
+                {% for section, questions in tests %}
+                    <div class="test-section">
+                        <div class="section-header">
+                            <h4 class="mb-0">
+                                {% if section == 'frontend' %}🌐 Frontend
+                                {% elseif section == 'backend' %}⚙️ Backend
+                                {% elseif section == 'devops' %}🐳 DevOps
+                                {% else %}{{ section|capitalize }}
+                                {% endif %}
+                            </h4>
+                        </div>
+
+                        {% for question in questions %}
+                            <div class="question-card">
+                                <h5 style="color: #4a00e0;">
+                                    Question {{ loop.index }}
+                                    <small class="text-muted">({{ question.type == 'qcm' ? 'QCM' : 'Question ouverte' }})</small>
+                                </h5>
+                                <p>{{ question.question }}</p>
+
+                                {% if question.type == 'qcm' %}
+                                    <div class="options-container">
+                                        {% for option in question.options %}
+                                            <label class="option-label" onclick="selectOption(this)">
+                                                <input type="radio"
+                                                       name="{{ question.id }}"
+                                                       value="{{ option|first }}"
+                                                       class="d-none">
+                                                {{ option }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                {% elseif question.type == 'texte' %}
+                                    <div class="mt-3">
+                                        <label class="form-label fw-bold">Votre réponse :</label>
+                                        {% if question.aide %}
+                                            <div class="alert alert-light mb-2">
+                                                <small>💡 {{ question.aide }}</small>
+                                            </div>
+                                        {% endif %}
+                                        <textarea name="{{ question.id }}"
+                                                  class="form-control code-input"
+                                                  rows="5"
+                                                  placeholder="Écrivez votre réponse ici..."></textarea>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <!-- Bouton de soumission -->
+                <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-custom btn-lg" style="padding: 15px 60px;">
+                        📝 Terminer et corriger le test
+                    </button>
+                    <p class="text-muted mt-2 small">
+                        ⚠️ Vous ne pourrez plus modifier vos réponses après soumission
+                    </p>
+                </div>
+            </form>
+        {% else %}
+            <!-- Résultats de la correction -->
+            <div class="correction-container">
+                <div class="text-center mb-4">
+                    <h2 style="color: #2e7d32;">📈 Résultats de votre test technique</h2>
+                    <p class="lead">Niveau : <strong>{{ correction.niveau }}</strong></p>
+                </div>
+
+                <!-- Grille de résultats -->
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="result-value">{{ correction.score }}%</span>
+                        <span class="result-label">Score global</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-value">{{ correction.correctes|round(1) }}/{{ correction.total }}</span>
+                        <span class="result-label">Questions correctes</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-value">{{ correction.niveau }}</span>
+                        <span class="result-label">Niveau atteint</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-value">{{ correction.temps_recommande }}</span>
+                        <span class="result-label">Temps recommandé</span>
+                    </div>
+                </div>
+
+                <!-- Détail des réponses -->
+                <div class="mt-5">
+                    <h4 style="color: #4a00e0;">📋 Détail question par question</h4>
+                    {% for detail in correction.details %}
+                        <div class="explication-box">
+                            {{ detail|raw }}
+                            {% if loop.index0 < correction.explications|length and correction.explications[loop.index0] %}
+                                <div class="mt-2 small">
+                                    <strong>Explication :</strong> {{ correction.explications[loop.index0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Recommandations -->
+                <div class="mt-5">
+                    <h4 style="color: #ff9800;">🎯 Plan d'amélioration</h4>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 style="color: #8e2de2;">✅ À conserver</h6>
+                                    <ul class="small">
+                                        <li>Continuez à pratiquer régulièrement</li>
+                                        <li>Revoyez vos bonnes réponses</li>
+                                        <li>Partagez vos connaissances</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 style="color: #f44336;">📚 À travailler</h6>
+                                    <ul class="small">
+                                        <li>Revoir les questions incorrectes</li>
+                                        <li>Étudier les concepts difficiles</li>
+                                        <li>Faire des exercices pratiques</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="text-center mt-5">
+                    <a href="{{ path('simulateur_test') }}" class="btn btn-custom btn-lg me-3">
+                        🔁 Repasser le test
+                    </a>
+                    <a href="{{ path('simulateur_technique') }}" class="btn btn-custom btn-lg">
+                        💻 Entraînement ciblé
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Timer
+        let minutes = 29;
+        let seconds = 59;
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            if (minutes === 0 && seconds === 0) {
+                timerElement.textContent = '⏰ Temps écoulé !';
+                document.getElementById('testForm').submit();
+                return;
+            }
+
+            if (seconds === 0) {
+                minutes--;
+                seconds = 59;
+            } else {
+                seconds--;
+            }
+
+            timerElement.textContent = `⏱️ ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Changer la couleur quand il reste peu de temps
+            if (minutes === 0 && seconds <= 30) {
+                timerElement.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+            }
+        }
+
+        // Démarrer le timer seulement si on n'est pas dans les résultats
+        {% if not correction %}
+        setInterval(updateTimer, 1000);
+        {% endif %}
+
+        // Sélection des options QCM
+        function selectOption(element) {
+            // Désélectionner toutes les options de cette question
+            const container = element.closest('.options-container');
+            container.querySelectorAll('.option-label').forEach(label => {
+                label.classList.remove('selected');
+            });
+
+            // Sélectionner l'option cliquée
+            element.classList.add('selected');
+            element.querySelector('input[type="radio"]').checked = true;
+        }
+    </script>
+{% endblock %}

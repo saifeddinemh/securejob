@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur d'Entretiens - SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .simulateur-card {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(142, 45, 226, 0.1);
+            border: 2px solid #e0d4f7;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .simulateur-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(142, 45, 226, 0.2);
+            border-color: #8e2de2;
+        }
+        .card-icon {
+            font-size: 3rem;
+            color: #8e2de2;
+            margin-bottom: 1rem;
+        }
+        .feature-badge {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        .metier-select {
+            background: linear-gradient(135deg, #f3e8ff, #e0d4f7);
+            border: 2px solid #8e2de2;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .level-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .level-junior { background: #e0f7fa; color: #006064; }
+        .level-intermediaire { background: #e8f5e9; color: #1b5e20; }
+        .level-senior { background: #fff3e0; color: #e65100; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center mb-4" style="color: #8e2de2; border-bottom: 3px solid #8e2de2; padding-bottom: 15px;">
+            🎤 SIMULATEUR D'ENTRETIENS & ÉVALUATIONS
+        </h1>
+
+        <div class="alert alert-info" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-color: #2196f3;">
+            <h4 class="alert-heading">🚀 Boostez vos compétences d'entretien</h4>
+            <p>Entraînez-vous avec notre simulateur intelligent et améliorez vos performances grâce au feedback personnalisé.</p>
+        </div>
+
+        <!-- Sélection du métier -->
+        <div class="metier-select">
+            <h5 style="color: #4a00e0;">📋 Choisissez votre scénario :</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <select class="form-select" style="border-color: #8e2de2;">
+                        <option selected>Sélectionnez un métier...</option>
+                        <option value="developpeur">Développeur Web</option>
+                        <option value="chef-projet">Chef de Projet</option>
+                        <option value="designer">Designer UX/UI</option>
+                        <option value="marketing">Marketing Digital</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" style="border-color: #8e2de2;">
+                        <option selected>Niveau...</option>
+                        <option value="junior"><span class="level-badge level-junior">Junior (0-2 ans)</span></option>
+                        <option value="intermediaire"><span class="level-badge level-intermediaire">Intermédiaire (2-5 ans)</span></option>
+                        <option value="senior"><span class="level-badge level-senior">Senior (5+ ans)</span></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-custom w-100">Commencer l'entretien</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <h3 class="mt-5 mb-4" style="color: #4a00e0;">✨ Nos fonctionnalités</h3>
+        <div class="row g-4">
+            <!-- Entraînement technique -->
+            <div class="col-md-4">
+                <div class="simulateur-card p-4 text-center">
+                    <div class="card-icon">💻</div>
+                    <h4 style="color: #8e2de2;">Entraînement Technique</h4>
+                    <p>Questions types par métier et niveau d'expérience</p>
+                    <div class="mt-3">
+                        <span class="feature-badge">+100 questions</span>
+                        <span class="feature-badge">15 métiers</span>
+                        <span class="feature-badge">3 niveaux</span>
+                    </div>
+                    <a href="#" class="btn btn-custom mt-3">Démarrer</a>
+                </div>
+            </div>
+
+            <!-- Simulations comportementales -->
+            <div class="col-md-4">
+                <div class="simulateur-card p-4 text-center">
+                    <div class="card-icon">🎭</div>
+                    <h4 style="color: #8e2de2;">Mises en Situation</h4>
+                    <p>Scénarios réels avec feedback personnalisé</p>
+                    <div class="mt-3">
+                        <span class="feature-badge">Cas pratiques</span>
+                        <span class="feature-badge">Feedback détaillé</span>
+                        <span class="feature-badge">Replay audio</span>
+                    </div>
+                    <a href="#" class="btn btn-custom mt-3">S'entraîner</a>
+                </div>
+            </div>
+
+            <!-- Évaluations techniques -->
+            <div class="col-md-4">
+                <div class="simulateur-card p-4 text-center">
+                    <div class="card-icon">📊</div>
+                    <h4 style="color: #8e2de2;">Tests Adaptatifs</h4>
+                    <p>Questions qui s'adaptent à votre niveau</p>
+                    <div class="mt-3">
+                        <span class="feature-badge">Correction auto</span>
+                        <span class="feature-badge">Score en temps réel</span>
+                        <span class="feature-badge">Progression</span>
+                    </div>
+                    <a href="#" class="btn btn-custom mt-3">Tester</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback IA -->
+        <div class="simulateur-card p-4 mt-5">
+            <h3 style="color: #8e2de2;">🤖 Feedback par Intelligence Artificielle</h3>
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <p>Notre IA analyse vos réponses et vous donne des conseils personnalisés :</p>
+                    <ul class="list-unstyled">
+                        <li>✅ <strong>Analyse du langage corporel</strong> (via webcam)</li>
+                        <li>✅ <strong>Évaluation du discours</strong> (clarté, structure)</li>
+                        <li>✅ <strong>Suggestions d'amélioration</strong> personnalisées</li>
+                        <li>✅ <strong>Comparaison avec les meilleures réponses</strong></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div style="font-size: 4rem;">⚡</div>
+                    <a href="#" class="btn btn-custom">Activer l'IA</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="row mt-5">
+            <div class="col-md-8">
+                <div class="simulateur-card p-4">
+                    <h4 style="color: #8e2de2;">📈 Vos statistiques</h4>
+                    <p>Suivez votre progression au fil des entraînements :</p>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h2 style="color: #4a00e0;">85%</h2>
+                            <small>Score moyen</small>
+                        </div>
+                        <div class="col-4">
+                            <h2 style="color: #4a00e0;">24</h2>
+                            <small>Entretiens simulés</small>
+                        </div>
+                        <div class="col-4">
+                            <h2 style="color: #4a00e0;">+15%</h2>
+                            <small>Progression mensuelle</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="simulateur-card p-4 text-center">
+                    <h5 style="color: #8e2de2;">🎯 Objectif du jour</h5>
+                    <div class="mt-3">
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" style="width: 75%; background: linear-gradient(90deg, #8e2de2, #4a00e0);">
+                                75%
+                            </div>
+                        </div>
+                        <small class="mt-2 d-block">3/4 modules complétés</small>
+                        <a href="#" class="btn btn-custom btn-sm mt-2">Continuer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Retour à la liste -->
+        <div class="text-center mt-5">
+            <a href="{{ path('candidat_index') }}" class="btn btn-custom">
+                ← Retour à la liste des candidats
+            </a>
+        </div>
+    </div>
+{% endblock %}

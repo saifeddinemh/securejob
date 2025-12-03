@@ -1,0 +1,272 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feedback IA - {{ candidat.nom }} - SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .ai-container {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(142, 45, 226, 0.15);
+            border: 2px solid #e0d4f7;
+        }
+        .ai-header {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .ai-analysis-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .strength-card { border-left-color: #4caf50; }
+        .improvement-card { border-left-color: #ff9800; }
+        .recommendation-card { border-left-color: #2196f3; }
+        .ai-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+        .sentiment-bar {
+            height: 10px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .sentiment-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+        .positive { background: linear-gradient(90deg, #4caf50, #8bc34a); }
+        .neutral { background: linear-gradient(90deg, #ff9800, #ffb74d); }
+        .negative { background: linear-gradient(90deg, #f44336, #ef5350); }
+        .comparison-card {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .metric-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 10px;
+        }
+        .metric-excellent { background: #c8e6c9; color: #2e7d32; }
+        .metric-good { background: #fff3e0; color: #f57c00; }
+        .metric-average { background: #e3f2fd; color: #1565c0; }
+        .chat-bubble {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            max-width: 80%;
+        }
+        .chat-bubble.ai {
+            background: #e3f2fd;
+            margin-left: auto;
+        }
+        .chat-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 20px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #f5f5f5 transparent transparent;
+        }
+        .chat-bubble.ai::after {
+            left: auto;
+            right: 20px;
+            border-color: #e3f2fd transparent transparent;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="ai-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>🤖 Analyse par Intelligence Artificielle</h2>
+                    <p class="mb-0">Feedback détaillé généré par notre IA pour {{ candidat.nom }} {{ candidat.prenom }}</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div style="font-size: 4rem;">⚡</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score global -->
+        <div class="ai-container mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center">
+                    <div class="metric-circle metric-excellent">
+                        82%
+                    </div>
+                    <h5 style="color: #8e2de2;">Score Global IA</h5>
+                </div>
+                <div class="col-md-8">
+                    <h4 style="color: #4a00e0;">📈 Analyse de performance</h4>
+                    <p>Notre IA a analysé les réponses, le langage, la structure et le contenu technique.</p>
+
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Clarté du discours</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="sentiment-bar">
+                            <div class="sentiment-fill positive" style="width: 85%"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-2">
+                            <span>Pertinence technique</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="sentiment-bar">
+                            <div class="sentiment-fill positive" style="width: 78%"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-2">
+                            <span>Structure des réponses</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="sentiment-bar">
+                            <div class="sentiment-fill neutral" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Points forts -->
+        <div class="ai-analysis-card strength-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="ai-icon">✅</div>
+                <div>
+                    <h4 style="color: #4caf50;">Points Forts Identifiés</h4>
+                    <p class="mb-0">Ce que le candidat fait particulièrement bien</p>
+                </div>
+            </div>
+            <ul>
+                {% for point in analyse.points_forts %}
+                    <li class="mb-2">{{ point }}</li>
+                {% endfor %}
+            </ul>
+            <div class="chat-bubble ai mt-3">
+                <strong>IA :</strong> "Le candidat montre une excellente maîtrise des concepts techniques de base et une bonne structure de pensée."
+            </div>
+        </div>
+
+        <!-- Points d'amélioration -->
+        <div class="ai-analysis-card improvement-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="ai-icon">📝</div>
+                <div>
+                    <h4 style="color: #ff9800;">Axes d'Amélioration</h4>
+                    <p class="mb-0">Domaines où des progrès peuvent être réalisés</p>
+                </div>
+            </div>
+            <ul>
+                {% for point in analyse.points_amelioration %}
+                    <li class="mb-2">{{ point }}</li>
+                {% endfor %}
+            </ul>
+            <div class="chat-bubble ai mt-3">
+                <strong>IA :</strong> "Je recommande de travailler sur la concision des réponses et d'ajouter plus d'exemples concrets."
+            </div>
+        </div>
+
+        <!-- Recommandations -->
+        <div class="ai-analysis-card recommendation-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="ai-icon">🎯</div>
+                <div>
+                    <h4 style="color: #2196f3;">Recommandations Personnalisées</h4>
+                    <p class="mb-0">Plan d'action pour progresser</p>
+                </div>
+            </div>
+            <div class="row">
+                {% for recommandation in analyse.recommandations %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6>Étape {{ loop.index }}</h6>
+                                <p>{{ recommandation }}</p>
+                                <small class="text-muted">Durée estimée : {{ loop.index * 2 }} semaines</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Comparaison avec la moyenne -->
+        <div class="comparison-card mt-4">
+            <h4 style="color: #1565c0;">📊 Comparaison avec les autres candidats</h4>
+            <div class="row text-center mt-3">
+                <div class="col-md-3">
+                    <div class="metric-circle metric-excellent">82%</div>
+                    <div>Score actuel</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-circle metric-good">75%</div>
+                    <div>Moyenne générale</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-circle metric-average">+7%</div>
+                    <div>Au-dessus de la moyenne</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-circle metric-excellent">Top 30%</div>
+                    <div>Classement</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversation avec l'IA -->
+        <div class="ai-container mt-4">
+            <h4 style="color: #8e2de2;">💬 Posez vos questions à l'IA</h4>
+            <div class="chat-bubble">
+                <strong>Vous :</strong> "Comment ce candidat pourrait-il améliorer ses réponses aux questions comportementales ?"
+            </div>
+            <div class="chat-bubble ai">
+                <strong>IA :</strong> "Je suggère d'utiliser la méthode STAR (Situation, Tâche, Action, Résultat) pour structurer les réponses. Par exemple, au lieu de dire 'Je gère bien le stress', décrivez une situation spécifique où vous avez démontré cette compétence."
+            </div>
+
+            <div class="mt-3">
+                <textarea class="form-control" rows="3" placeholder="Posez une question à l'IA..."></textarea>
+                <button class="btn btn-custom mt-2">Demander à l'IA</button>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ path('simulateur_entretien', {'id': candidat.id}) }}" class="btn btn-custom">
+                ← Retour à l'entretien
+            </a>
+            <div>
+                <a href="{{ path('statistiques_entretien', {'id': candidat.id}) }}" class="btn btn-custom me-2">
+                    📈 Voir les statistiques
+                </a>
+                <a href="{{ path('candidat_show', {'id': candidat.id}) }}" class="btn btn-custom">
+                    👤 Profil complet
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
