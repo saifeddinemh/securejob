@@ -1,0 +1,82 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Gestion des Candidats{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Candidats ({{ candidates|length }})</h2>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Candidat</th>
+                            <th>Contact</th>
+                            <th>CV</th>
+                            <th>Compétences</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidat in candidates %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        {% if candidat.photoPath %}
+                                            <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}" class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                                        {% else %}
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div class="fw-bold">{{ candidat.prenom }} {{ candidat.nom }}</div>
+                                            <small class="text-muted">{{ candidat.dateNaissance ? candidat.dateNaissance|date('d/m/Y') : '' }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div><i class="fas fa-envelope text-muted me-2"></i>{{ candidat.email }}</div>
+                                    {% if candidat.telephone %}
+                                        <div class="small mt-1"><i class="fas fa-phone text-muted me-2"></i>{{ candidat.telephone }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if candidat.cvPath %}
+                                        <a href="{{ asset('uploads/cv/' ~ candidat.cvPath) }}" target="_blank" class="btn btn-sm btn-light border">
+                                            <i class="fas fa-file-pdf text-danger me-1"></i> Voir CV
+                                        </a>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Pas de CV</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1 flex-wrap" style="max-width: 200px;">
+                                        {% for competence in candidat.competences|slice(0, 3) %}
+                                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">{{ competence.nom }}</span>
+                                        {% endfor %}
+                                        {% if candidat.competences|length > 3 %}
+                                            <span class="badge bg-light text-muted border">+{{ candidat.competences|length - 3 }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ path('candidat_show', {'id': candidat.id}) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">Aucun candidat trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

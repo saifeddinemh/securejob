@@ -1,0 +1,59 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Gestion des Recruteurs{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Recruteurs ({{ recruiters|length }})</h2>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Entreprise</th>
+                            <th>Email Responsable</th>
+                            <th>Site Web</th>
+                            <th>Offres</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recruiter in recruiters %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold">{{ recruiter.nom }}</div>
+                                    <small class="text-muted">{{ recruiter.adresse }}</small>
+                                </td>
+                                <td>{{ recruiter.user.email }}</td>
+                                <td>
+                                    {% if recruiter.siteWeb %}
+                                        <a href="{{ recruiter.siteWeb }}" target="_blank" class="text-decoration-none">
+                                            <i class="fas fa-external-link-alt small me-1"></i> Visiter
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary rounded-pill">{{ recruiter.offres|length }}</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">Aucu recruteur trouvé.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

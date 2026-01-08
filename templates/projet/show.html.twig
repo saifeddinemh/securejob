@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ projet.nom }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h1>{{ projet.nom }}</h1>
+                    <p class="lead">{{ projet.description }}</p>
+                    <hr>
+                    <h5>Objectifs</h5>
+                    <p>{{ projet.objectifs|nl2br }}</p>
+                </div>
+            </div>
+
+            {# Espace de Collaboration / Messagerie #}
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Espace de Collaboration</h5>
+                </div>
+                <div class="card-body" style="height: 400px; overflow-y: auto;">
+                    {% for message in messages %}
+                        <div class="mb-3 {% if message.auteur == app.user %}text-end{% endif %}">
+                            <div class="d-inline-block p-2 rounded {% if message.auteur == app.user %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width: 80%;">
+                                <small class="d-block fw-bold">{{ message.auteur.email }}</small>
+                                {{ message.contenu }}
+                                <small class="d-block text-muted" style="font-size: 0.7rem;">{{ message.createdAt|date('d/m H:i') }}</small>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">Aucun message. Commencez la discussion !</p>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    {% if app.user %}
+                        <form method="post">
+                            <div class="input-group">
+                                <input type="text" name="message" class="form-control" placeholder="Votre message..." required>
+                                <button class="btn btn-primary" type="submit">Envoyer</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <p class="text-center mb-0 small">Connectez-vous pour participer à la discussion.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>Participants ({{ projet.participants|length }}/{{ projet.nombreParticipantsMax }})</h5>
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for participant in projet.participants %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <div class="bg-secondary rounded-circle me-2" style="width: 30px; height: 30px;"></div>
+                                {{ participant.prenom }} {{ participant.nom }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    {% if is_granted('ROLE_CANDIDATE') and projet.participants|length < projet.nombreParticipantsMax %}
+                        {% set is_participant = false %}
+                        {% for p in projet.participants %}
+                            {% if p == app.user.candidat %}{% set is_participant = true %}{% endif %}
+                        {% endfor %}
+                        
+                        {% if not is_participant %}
+                            <form action="{{ path('app_projet_rejoindre', {'id': projet.id}) }}" method="post">
+                                <button type="submit" class="btn btn-primary w-100">Rejoindre le projet</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

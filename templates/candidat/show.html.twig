@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ candidat.nom }} {{ candidat.prenom }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+
+        <h1 class="text-center mb-4" style="color: #8e2de2;">Profil de {{ candidat.nom }} {{ candidat.prenom }}</h1>
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 style="color: #8e2de2;">Informations personnelles</h2>
+            <ul class="list-unstyled mt-2">
+                <li><strong>Email :</strong> {{ candidat.email }}</li>
+                <li><strong>Téléphone :</strong> {{ candidat.telephone }}</li>
+                <li><strong>Date de naissance :</strong> {{ candidat.dateNaissance ? candidat.dateNaissance|date('d/m/Y') : 'N/A' }}</li>
+                <li><strong>Adresse :</strong> {{ candidat.adresse }}</li>
+                <li><strong>Description :</strong> {{ candidat.description }}</li>
+                {% if candidat.cvPath %}
+                    <li><strong>CV :</strong> <a href="{{ asset('uploads/cv/' ~ candidat.cvPath) }}" target="_blank">Télécharger</a></li>
+                {% endif %}
+                {% if candidat.photoPath %}
+                    <li class="mt-2"><strong>Photo :</strong><br>
+                        <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}" alt="Photo de {{ candidat.nom }}" width="150" class="rounded">
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 style="color: #8e2de2;">Expériences</h2>
+            {% if candidat.experiences|length > 0 %}
+                <ul class="list-unstyled mt-2">
+                    {% for exp in candidat.experiences %}
+                        <li class="mb-2">
+                            <strong>Poste :</strong> {{ exp.poste }}<br>
+                            <strong>Entreprise :</strong> {{ exp.entreprise }}<br>
+                            <strong>Période :</strong> {{ exp.dateDebut ? exp.dateDebut|date('d/m/Y') : 'N/A' }} - {{ exp.dateFin ? exp.dateFin|date('d/m/Y') : 'Présent' }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucune expérience enregistrée.</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 style="color: #8e2de2;">Formations</h2>
+            {% if candidat.formations|length > 0 %}
+                <ul class="list-unstyled mt-2">
+                    {% for form in candidat.formations %}
+                        <li class="mb-2">
+                            <strong>Titre :</strong> {{ form.titre }}<br>
+                            <strong>Établissement :</strong> {{ form.etablissement }}<br>
+                            <strong>Période :</strong> {{ form.dateDebut ? form.dateDebut|date('d/m/Y') : 'N/A' }} - {{ form.dateFin ? form.dateFin|date('d/m/Y') : 'Présent' }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucune formation enregistrée.</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 style="color: #8e2de2;">Langues</h2>
+            {% if candidat.langues|length > 0 %}
+                <ul class="list-unstyled mt-2">
+                    {% for langue in candidat.langues %}
+                        <li>{{ langue.nom }}{% if langue.description %} - {{ langue.description }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucune langue enregistrée.</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 style="color: #8e2de2;">Badges</h2>
+            {% if candidat.badges|length > 0 %}
+                <ul class="list-unstyled mt-2">
+                    {% for badge in candidat.badges %}
+                        <li>{{ badge.nom }}{% if badge.description %} - {{ badge.description }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucun badge enregistré.</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 style="color: #8e2de2;">Compétences</h2>
+            {% if candidat.competences|length > 0 %}
+                <ul class="list-unstyled mt-2">
+                    {% for comp in candidat.competences %}
+                        <li>{{ comp.nom }}{% if comp.description %} - {{ comp.description }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucune compétence enregistrée.</p>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2 mb-5">
+            <a href="{{ path('candidat_index') }}" class="btn btn-custom">Retour à la liste</a>
+            <a href="{{ path('candidat_edit', {'id': candidat.id}) }}" class="btn btn-custom">Modifier</a>
+
+            <form method="post" action="{{ path('candidat_delete', {'id': candidat.id}) }}"
+                  onsubmit="return confirm('Voulez-vous vraiment supprimer ce candidat ?');"
+                  style="display:inline-block;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidat.id) }}">
+                <button class="btn btn-danger">Supprimer</button>
+            </form>
+
+            <!-- ⭐⭐⭐ BOUTON CORRIGÉ ⭐⭐⭐ -->
+            <a href="{{ path('simulateur_entretien', {'id': candidat.id}) }}"
+               class="btn btn-simulateur">
+                🎤 Simuler un entretien
+            </a>
+        </div>
+
+    </div>
+{% endblock %}

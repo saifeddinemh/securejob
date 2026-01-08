@@ -1,0 +1,19 @@
+Nom: yaya
+Prénom: mahmm
+Email: sayyf@yaya.com
+Téléphone: 0021695110027
+Date de naissance: 2002-07-10
+Adresse: Kasserine, Tunisie
+	
+Expériences:
+Développeur Junior chez ABC Corp
+Stagiaire Marketing chez XYZ S.A.
+
+Formations:
+Baccalauréat Sciences Techniques
+Licence Informatique - Université de Tunis
+
+Langues:
+Français
+Anglais
+Arabe

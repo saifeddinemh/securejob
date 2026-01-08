@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Candidat{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+
+        <h1 class="text-center mb-4" style="color: #8e2de2;">Modifier le candidat</h1>
+
+        {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+
+        <div class="card p-4 mb-4 shadow-sm">
+            <h3 style="color: #8e2de2;">Informations personnelles</h3>
+            <div class="row g-3 mt-2">
+                <div class="col-md-6">{{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.prenom, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.telephone, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.adresse, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-12">{{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}</div>
+            </div>
+        </div>
+
+        {% set collections = ['experiences','formations','langues','badges','competences'] %}
+
+        {% for collection in collections %}
+            {% set colForm = attribute(form, collection) %}
+            <div class="card p-3 mb-3 shadow-sm">
+                <h3 style="color: #8e2de2;">{{ collection|capitalize }}</h3>
+                <div id="{{ collection }}"
+                    {% if colForm.vars is defined and colForm.vars.prototype is defined %}
+                        data-prototype="{{ form_widget(colForm.vars.prototype)|e('html_attr') }}"
+                    {% endif %}
+                >
+                    {{ form_widget(colForm) }}
+                </div>
+                <button type="button" class="btn btn-custom mt-2" id="add-{{ collection }}">Ajouter {{ collection|capitalize|slice(0, -1) }}</button>
+            </div>
+        {% endfor %}
+
+        <div class="text-end mb-3">
+            <button class="btn btn-custom">Modifier</button>
+            <a href="{{ path('candidat_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        {{ form_end(form) }}
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function addCollection(buttonId, containerId) {
+                const btn = document.getElementById(buttonId);
+                const container = document.getElementById(containerId);
+                let index = container.children.length;
+
+                if (!btn || !container) return;
+
+                btn.addEventListener('click', function() {
+                    const prototype = container.dataset.prototype;
+                    if (!prototype) return;
+                    const newForm = prototype.replace(/__name__/g, index);
+                    container.insertAdjacentHTML('beforeend', newForm);
+                    index++;
+                });
+            }
+
+            ['experiences','formations','langues','badges','competences'].forEach(function(name) {
+                addCollection('add-' + name, name);
+            });
+        });
+    </script>
+{% endblock %}

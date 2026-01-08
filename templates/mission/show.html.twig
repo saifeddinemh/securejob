@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ mission.titre }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_mission_index') }}">Missions</a></li>
+            <li class="breadcrumb-item active">{{ mission.titre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h1 class="card-title h2">{{ mission.titre }}</h1>
+                    <p class="text-muted">Publié par <strong>{{ mission.entreprise.nom }}</strong></p>
+                    <hr>
+                    <h5>Description</h5>
+                    <p>{{ mission.description|nl2br }}</p>
+                    
+                    <h5 class="mt-4">Compétences requises</h5>
+                    <div>
+                        {% for competence in mission.competencesRequises %}
+                            <span class="badge bg-secondary me-1">{{ competence.nom }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>Détails de la mission</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>Budget:</strong> {{ mission.budget }} €</li>
+                        <li class="mb-2"><strong>Durée:</strong> {{ mission.duree }}</li>
+                        <li class="mb-2"><strong>Statut:</strong> 
+                            <span class="badge {% if mission.statut == 'ouverte' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ mission.statut|capitalize }}
+                            </span>
+                        </li>
+                    </ul>
+
+                    {% if is_granted('ROLE_CANDIDATE') and mission.statut == 'ouverte' %}
+                        <form action="{{ path('app_mission_postuler', {'id': mission.id}) }}" method="post">
+                            <button type="submit" class="btn btn-primary w-100">Postuler à cette mission</button>
+                        </form>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_RECRUITER') and mission.entreprise == app.user.entreprise and mission.statut == 'ouverte' %}
+                        <form action="{{ path('app_mission_terminer', {'id': mission.id}) }}" method="post" class="mt-2">
+                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Voulez-vous vraiment terminer cette mission et attribuer un badge ?')">
+                                Marquer comme terminée
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

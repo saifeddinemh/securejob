@@ -1,0 +1,193 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des candidats{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navbar moderne */
+        .navbar-custom {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-custom a {
+            color: #fff;
+            font-weight: 600;
+        }
+        .navbar-custom a:hover {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        /* Carte filtre */
+        .filter-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        /* Tableau moderne */
+        .table {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .table thead {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: #fff;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f3e8ff;
+        }
+
+        /* Tags compétences et badges */
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background-color: #e0d4f7;
+            font-size: 0.8rem;
+            margin: 2px;
+            color: #4a00e0;
+        }
+        .tag.badge {
+            background-color: #b67cff;
+            color: #fff;
+        }
+
+        /* Boutons stylés mauve */
+        .btn-custom {
+            border-radius: 8px;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+        }
+
+        .table img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Gestion des Candidats</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Filtre et recherche -->
+        <div class="filter-card">
+            <form method="get" class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" name="search" value="{{ search|default('') }}" placeholder="Nom, Prénom, Email..." class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <select name="competence" class="form-select">
+                        <option value="">Toutes les compétences</option>
+                        {% for comp in competences %}
+                            <option value="{{ comp.id }}" {% if selectedCompetence == comp.id %}selected{% endif %}>{{ comp.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="badge" class="form-select">
+                        <option value="">Tous les badges</option>
+                        {% for b in badges %}
+                            <option value="{{ b.id }}" {% if selectedBadge == b.id %}selected{% endif %}>{{ b.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-custom flex-fill">Filtrer</button>
+                    <a href="{{ path('candidat_index') }}" class="btn btn-secondary flex-fill">Réinitialiser</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Ajouter un candidat -->
+        <div class="mb-3 text-end">
+            <a href="{{ path('candidat_new') }}" class="btn btn-custom">Ajouter un candidat</a>
+        </div>
+
+        <!-- Tableau -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Compétences</th>
+                    <th>Badges</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for candidat in candidats %}
+                    <tr>
+                        <td>
+                            {% if candidat.photoPath %}
+                                <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}" alt="Photo">
+                            {% else %}
+                                <img src="{{ asset('images/default-avatar.png') }}" alt="Photo">
+                            {% endif %}
+                        </td>
+                        <td>{{ candidat.nom }}</td>
+                        <td>{{ candidat.prenom }}</td>
+                        <td>{{ candidat.email }}</td>
+                        <td>{{ candidat.telephone }}</td>
+                        <td>
+                            {% for comp in candidat.competences %}
+                                <span class="tag">{{ comp.nom }}</span>
+                            {% else %}
+                                <span>Aucune</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for badge in candidat.badges %}
+                                <span class="tag badge">{{ badge.nom }}</span>
+                            {% else %}
+                                <span>Aucun</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a href="{{ path('candidat_show', {'id': candidat.id}) }}" class="btn btn-info btn-sm btn-custom">Voir</a>
+                            <a href="{{ path('candidat_edit', {'id': candidat.id}) }}" class="btn btn-warning btn-sm btn-custom">Modifier</a>
+                            <form method="post" action="{{ path('candidat_delete', {'id': candidat.id}) }}" style="display:inline-block;" onsubmit="return confirm('Supprimer ce candidat ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidat.id) }}">
+                                <button class="btn btn-danger btn-sm btn-custom">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">Aucun candidat trouvé.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

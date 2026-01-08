@@ -1,0 +1,285 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Évaluation Technique - {{ candidat.nom }} - SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .evaluation-container {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(142, 45, 226, 0.15);
+        }
+        .test-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e0d4f7;
+            transition: all 0.3s ease;
+        }
+        .test-card:hover {
+            border-color: #8e2de2;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.2);
+        }
+        .test-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .difficulty-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .easy { background: #e8f5e9; color: #2e7d32; }
+        .medium { background: #fff3e0; color: #f57c00; }
+        .hard { background: #ffebee; color: #c62828; }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .answer-option {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .answer-option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        .answer-option.selected {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+        .answer-option.correct {
+            background: #c8e6c9;
+            border-color: #2e7d32;
+        }
+        .answer-option.incorrect {
+            background: #ffcdd2;
+            border-color: #c62828;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#8e2de2 0% 75%, #e0e0e0 75% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .score-inner {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #8e2de2;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: #8e2de2;">
+                📊 Évaluation Technique
+            </h1>
+            <div class="btn-group">
+                <a href="{{ path('simulateur_entretien', {'id': candidat.id}) }}" class="btn btn-custom">
+                    ← Retour à l'entretien
+                </a>
+                <a href="{{ path('feedback_ia', {'id': candidat.id}) }}" class="btn btn-custom">
+                    🤖 Analyse IA →
+                </a>
+            </div>
+        </div>
+
+        <!-- Candidat info -->
+        <div class="alert" style="background: linear-gradient(135deg, #f3e8ff, #e0d4f7); border-color: #8e2de2;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 style="color: #4a00e0;">{{ candidat.nom }} {{ candidat.prenom }}</h5>
+                    <p class="mb-0">
+                        <strong>Compétences évaluées :</strong>
+                        {% for comp in candidat.competences %}
+                            <span class="badge" style="background: linear-gradient(135deg, #8e2de2, #4a00e0);">
+                            {{ comp.nom }}
+                        </span>
+                        {% endfor %}
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="score-circle">
+                        <div class="score-inner">
+                            75%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tests par catégorie -->
+        {% for category, questions in tests %}
+            <div class="evaluation-container mb-4">
+                <h3 class="mb-4" style="color: #4a00e0;">
+                    <span class="test-category">{{ category|upper }}</span>
+                    <small class="text-muted ms-2">{{ questions|length }} questions</small>
+                </h3>
+
+                {% for question in questions %}
+                    <div class="test-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 style="color: #8e2de2;">Question {{ loop.index }}</h5>
+                            <span class="difficulty-badge
+                            {% if loop.index <= 2 %}easy
+                            {% elseif loop.index <= 4 %}medium
+                            {% else %}hard
+                            {% endif %}">
+                            {% if loop.index <= 2 %}Facile
+                            {% elseif loop.index <= 4 %}Moyen
+                            {% else %}Difficile
+                            {% endif %}
+                        </span>
+                        </div>
+
+                        <p>{{ question }}</p>
+
+                        {% if corrections[question] is defined %}
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-custom"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#correction{{ loop.parent.loop.index }}{{ loop.index }}">
+                                    Voir la correction
+                                </button>
+                                <div class="collapse mt-2" id="correction{{ loop.parent.loop.index }}{{ loop.index }}">
+                                    <div class="code-block">
+                                        <ul>
+                                            {% for point in corrections[question] %}
+                                                <li>{{ point }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Réponses pour les questions à choix multiples -->
+                        <div class="mt-3">
+                            <div class="answer-option" onclick="selectAnswer(this)">
+                                <strong>A)</strong> Première option de réponse
+                            </div>
+                            <div class="answer-option" onclick="selectAnswer(this)">
+                                <strong>B)</strong> Deuxième option de réponse
+                            </div>
+                            <div class="answer-option" onclick="selectAnswer(this)">
+                                <strong>C)</strong> Troisième option de réponse
+                            </div>
+                            <div class="answer-option" onclick="selectAnswer(this)">
+                                <strong>D)</strong> Quatrième option de réponse
+                            </div>
+                        </div>
+
+                        <!-- Zone de code pour les questions pratiques -->
+                        <div class="mt-3">
+                            <label class="form-label">Votre code :</label>
+                            <textarea class="form-control code-block" rows="4"
+                                      placeholder="Écrivez votre code ici..."></textarea>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <!-- Boutons d'action -->
+        <div class="text-center mt-4">
+            <button class="btn btn-custom btn-lg me-3" style="padding: 12px 40px;">
+                📥 Soumettre les réponses
+            </button>
+            <button class="btn btn-custom btn-lg" onclick="showResults()">
+                📊 Voir les résultats
+            </button>
+        </div>
+
+        <!-- Résultats (caché par défaut) -->
+        <div class="evaluation-container mt-4 d-none" id="results">
+            <h3 class="text-center mb-4" style="color: #4a00e0;">📈 Résultats de l'Évaluation</h3>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 style="color: #8e2de2;">📋 Score par catégorie</h5>
+                    {% for category in tests|keys %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>{{ category }}</span>
+                                <span><strong>{% if loop.index == 1 %}85%{% elseif loop.index == 2 %}70%{% else %}60%{% endif %}</strong></span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {% if loop.index == 1 %}85%{% elseif loop.index == 2 %}70%{% else %}60%{% endif %};
+                                         background: linear-gradient(90deg, #8e2de2, #4a00e0);">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <h5 style="color: #8e2de2;">🎯 Recommandations</h5>
+                    <div class="alert" style="background: #e8f5e9; border-color: #4caf50;">
+                        <ul class="mb-0">
+                            <li>Approfondir les connaissances en bases de données</li>
+                            <li>Pratiquer les algorithmes de tri</li>
+                            <li>Revoir les design patterns MVC</li>
+                            <li>S'entraîner aux tests unitaires</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectAnswer(element) {
+            // Retire la sélection de toutes les options
+            const options = element.parentElement.querySelectorAll('.answer-option');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Ajoute la sélection à l'option cliquée
+            element.classList.add('selected');
+        }
+
+        function showResults() {
+            document.getElementById('results').classList.remove('d-none');
+            window.scrollTo({
+                top: document.getElementById('results').offsetTop - 20,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+{% endblock %}

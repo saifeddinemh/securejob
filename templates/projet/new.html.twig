@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Projet{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Créer un nouveau projet</h1>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary mt-3">Créer</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('app_projet_index') }}" class="btn btn-secondary mt-3">
+            Retour à la liste des projets
+        </a>
+
+    </div>
+{% endblock %}

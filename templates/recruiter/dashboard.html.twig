@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Recruteur{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Bienvenue, {{ entreprise.nom }}</h1>
+            <p class="text-muted">Gérez vos offres d'emploi et suivez les candidatures.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ path('recruiter_entreprise_edit') }}" class="btn btn-outline-secondary">Paramètres Entreprise</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Offres publiées</h5>
+                    <p class="display-4">{{ offres|length }}</p>
+                    <a href="{{ path('recruiter_offres_index') }}" class="btn btn-light btn-sm">Voir mes offres</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Candidatures</h5>
+                    <p class="display-4">{{ totalCandidatures }}</p>
+                    <button class="btn btn-light btn-sm" disabled>Suivi global</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Nouvelles offres</h5>
+                    <p class="display-4">+</p>
+                    <a href="{{ path('recruiter_offres_new') }}" class="btn btn-light btn-sm">Publier maintenant</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h3 class="mb-0">Statistiques par offre</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Offre</th>
+                        <th>Candidatures</th>
+                        <th>Dernière activité</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for offre in offres %}
+                    <tr>
+                        <td><strong>{{ offre.titre }}</strong></td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     style="width: {{ min(offre.candidatures|length * 10, 100) }}%;"
+                                     aria-valuenow="{{ offre.candidatures|length }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    {{ offre.candidatures|length }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ offre.createdAt|date('d/m/Y') }}</td>
+                        <td>
+                            <a href="{{ path('recruiter_offres_edit', {'id': offre.id}) }}" class="btn btn-sm btn-primary">Gérer</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">Vous n'avez pas encore publié d'offres.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulation d'Entretien - {{ candidat.nom }} - SecureJob{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: #8e2de2;">
+                🎤 Simulation d'Entretien
+            </h1>
+            <a href="{{ path('candidat_show', {'id': candidat.id}) }}" class="btn btn-custom">
+                ← Retour au profil
+            </a>
+        </div>
+
+        <!-- Info candidat -->
+        <div class="card mb-4" style="border: 2px solid #8e2de2;">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        {% if candidat.photoPath %}
+                            <img src="{{ asset('uploads/photos/' ~ candidat.photoPath) }}"
+                                 alt="Photo"
+                                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #8e2de2;">
+                        {% else %}
+                            <div style="width: 100px; height: 100px; border-radius: 50%; background: #8e2de2; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; margin: 0 auto;">
+                                {{ candidat.nom|first }}{{ candidat.prenom|first }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h3 style="color: #4a00e0;">{{ candidat.nom }} {{ candidat.prenom }}</h3>
+                        <p><strong>Email :</strong> {{ candidat.email }} | <strong>Téléphone :</strong> {{ candidat.telephone }}</p>
+                        {% if candidat.competences|length > 0 %}
+                            <p><strong>Compétences :</strong>
+                                {% for comp in candidat.competences %}
+                                    <span class="badge" style="background: #8e2de2; color: white;">{{ comp.nom }}</span>
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Options de simulation -->
+        <h3 class="mb-4" style="color: #4a00e0;">✨ Choisissez le type d'entretien</h3>
+
+        <div class="row g-4">
+            <!-- Option 1 -->
+            <div class="col-md-4">
+                <div class="card text-center h-100" style="border-top: 5px solid #8e2de2;">
+                    <div class="card-body">
+                        <div style="font-size: 3rem; color: #8e2de2; margin-bottom: 15px;">💻</div>
+                        <h5>Entretien Technique</h5>
+                        <p class="small">Questions techniques adaptées au profil</p>
+                        <a href="{{ path('candidat_simulateur_technique') }}" class="btn btn-custom w-100">
+                            Démarrer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="col-md-4">
+                <div class="card text-center h-100" style="border-top: 5px solid #4a00e0;">
+                    <div class="card-body">
+                        <div style="font-size: 3rem; color: #4a00e0; margin-bottom: 15px;">🎭</div>
+                        <h5>Simulation Comportementale</h5>
+                        <p class="small">Mises en situation réelles</p>
+                        <a href="{{ path('candidat_simulateur_comportemental') }}" class="btn btn-custom w-100">
+                            Démarrer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="col-md-4">
+                <div class="card text-center h-100" style="border-top: 5px solid #ff8a00;">
+                    <div class="card-body">
+                        <div style="font-size: 3rem; color: #ff8a00; margin-bottom: 15px;">📊</div>
+                        <h5>Test Technique</h5>
+                        <p class="small">Évaluation des compétences</p>
+                        <a href="{{ path('candidat_simulateur_test') }}" class="btn btn-custom w-100">
+                            Démarrer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message -->
+        <div class="alert alert-info mt-5">
+            <h5>💡 Comment fonctionne la simulation ?</h5>
+            <ol class="mb-0">
+                <li>Choisissez un type d'entretien</li>
+                <li>Répondez aux questions comme en réel</li>
+                <li>Recevez un feedback détaillé</li>
+                <li>Améliorez-vous grâce aux conseils</li>
+            </ol>
+        </div>
+
+        <!-- Navigation -->
+        <div class="text-center mt-4">
+            <a href="{{ path('candidat_simulateur_index') }}" class="btn btn-simulateur me-2">
+                🏠 Accueil simulateur
+            </a>
+            <a href="{{ path('candidat_index') }}" class="btn btn-custom">
+                📋 Liste des candidats
+            </a>
+        </div>
+    </div>
+{% endblock %}

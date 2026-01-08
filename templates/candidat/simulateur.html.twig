@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur - {{ candidat.nom }} {{ candidat.prenom }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2 class="mb-4">Simulateur d'entretien pour {{ candidat.nom }} {{ candidat.prenom }}</h2>
+
+        <div class="card p-4 mb-4">
+            <h5>Questions techniques</h5>
+            <ul id="technical-questions"></ul>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h5>Scénarios comportementaux</h5>
+            <ul id="behavioral-scenarios"></ul>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h5>Test technique</h5>
+            <ul id="technical-test"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Exemple simple de fetch questions techniques
+        fetch('{{ path('candidat_simulateur_api_questions') }}?job=general&level=junior')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('technical-questions');
+                data.questions.forEach(q => {
+                    const li = document.createElement('li');
+                    li.textContent = q;
+                    list.appendChild(li);
+                });
+            });
+    </script>
+{% endblock %}

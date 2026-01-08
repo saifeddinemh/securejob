@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'offre{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Modifier l'offre : {{ offre.titre }}</h3>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.titre) }}
+                            {{ form_widget(form.titre) }}
+                            {{ form_errors(form.titre) }}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.lieu) }}
+                                {{ form_widget(form.lieu) }}
+                                {{ form_errors(form.lieu) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.typeContrat) }}
+                                {{ form_widget(form.typeContrat) }}
+                                {{ form_errors(form.typeContrat) }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.description) }}
+                            {{ form_widget(form.description) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('recruiter_offres_index') }}" class="btn btn-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

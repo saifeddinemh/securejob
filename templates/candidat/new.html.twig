@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer Candidat{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #333;
+            padding-bottom: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #ff6b6b, #f06595, #ff9f43);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px);}
+            100% { opacity: 1; transform: translateY(0);}
+        }
+
+        h3 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #764ba2;
+            border-bottom: 2px solid #667eea;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .card-section {
+            background: #f7f9fc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .card-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .form-check {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+
+        .text-end {
+            text-align: right;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="form-container">
+
+        <h1>Créer un nouveau candidat</h1>
+
+        {{ form_start(form, {'attr': {'enctype':'multipart/form-data'}}) }}
+
+        <div class="card-section">
+            <h3>Informations personnelles</h3>
+            <div class="row g-3">
+                <div class="col-md-6">{{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.prenom, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.telephone, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.dateNaissance, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.adresse, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-12">{{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.cvFile, {'attr': {'class': 'form-control'}}) }}</div>
+                <div class="col-md-6">{{ form_row(form.photoFile, {'attr': {'class': 'form-control'}}) }}</div>
+            </div>
+        </div>
+
+        <div class="card-section">
+            <h3>Expériences</h3>
+            <div id="experiences" data-prototype="{{ form_widget(form.experiences.vars.prototype)|e('html_attr') }}">
+                {{ form_widget(form.experiences) }}
+            </div>
+            <button type="button" class="btn btn-custom" id="add-experience">Ajouter une expérience</button>
+        </div>
+
+        <div class="card-section">
+            <h3>Formations</h3>
+            <div id="formations" data-prototype="{{ form_widget(form.formations.vars.prototype)|e('html_attr') }}">
+                {{ form_widget(form.formations) }}
+            </div>
+            <button type="button" class="btn btn-custom" id="add-formation">Ajouter une formation</button>
+        </div>
+
+        <div class="card-section">
+            <h3>Langues</h3>
+            <div>
+                {% for langue in form.langues %}
+                    <div class="form-check">
+                        {{ form_widget(langue) }}
+                        {{ form_label(langue) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card-section">
+            <h3>Badges</h3>
+            <div>
+                {% for badge in form.badges %}
+                    <div class="form-check">
+                        {{ form_widget(badge) }}
+                        {{ form_label(badge) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card-section">
+            <h3>Compétences</h3>
+            <div>
+                {% for comp in form.competences %}
+                    <div class="form-check">
+                        {{ form_widget(comp) }}
+                        {{ form_label(comp) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="text-end mb-5">
+            <button type="submit" class="btn btn-custom">Enregistrer</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function addCollection(buttonId, containerId) {
+                const btn = document.getElementById(buttonId);
+                const container = document.getElementById(containerId);
+                let index = container.children.length;
+
+                btn.addEventListener('click', function() {
+                    const prototype = container.dataset.prototype;
+                    const newForm = prototype.replace(/__name__/g, index);
+                    container.insertAdjacentHTML('beforeend', newForm);
+                    index++;
+                });
+            }
+
+            addCollection('add-experience', 'experiences');
+            addCollection('add-formation', 'formations');
+        });
+    </script>
+{% endblock %}

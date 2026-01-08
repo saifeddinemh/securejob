@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulations Comportementales - Simulateur SecureJob{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .scenario-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e0d4f7;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.08);
+        }
+        .scenario-header {
+            background: linear-gradient(135deg, #f3e8ff, #e0d4f7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #8e2de2;
+        }
+        .bonnes-pratiques {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #4caf50;
+        }
+        .textarea-reponse {
+            border: 2px solid #8e2de2;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 120px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        .textarea-reponse:focus {
+            box-shadow: 0 0 0 3px rgba(142, 45, 226, 0.2);
+            border-color: #4a00e0;
+        }
+        .feedback-container {
+            background: linear-gradient(135deg, #fff3e0, #ffecb3);
+            border-radius: 15px;
+            padding: 30px;
+            border: 3px solid #ff9800;
+            margin-top: 30px;
+        }
+        .score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #8e2de2;
+            text-align: center;
+        }
+        .conseil-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .point-fort-item {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 8px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .evaluation-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .excellent { background: #4caf50; color: white; }
+        .bon { background: #8bc34a; color: white; }
+        .moyen { background: #ffc107; color: #333; }
+        .faible { background: #ff9800; color: white; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: #8e2de2;">
+                🎭 Simulations Comportementales
+            </h1>
+            <div>
+                <!-- CORRECTION ICI : candidat_simulateur_index -->
+                <a href="{{ path('candidat_simulateur_index') }}" class="btn btn-custom me-2">
+                    ← Simulateur
+                </a>
+                <a href="{{ path('candidat_simulateur_technique') }}" class="btn btn-custom">
+                    💻 Technique
+                </a>
+            </div>
+        </div>
+
+        {% if not feedback %}
+            <!-- Formulaire des scénarios -->
+            <div class="alert alert-info" style="background: #e3f2fd; border-color: #2196f3;">
+                <h5>🎯 Mises en situation réelles</h5>
+                <p>Répondez à ces scénarios comme vous le feriez en entretien. Soyez concret, utilisez des exemples et structurez vos réponses.</p>
+            </div>
+
+            <form method="post">
+                {% for scenario in scenarios %}
+                    <div class="scenario-card">
+                        <div class="scenario-header">
+                            <h4 style="color: #4a00e0;">
+                                Scénario {{ loop.index }} : {{ scenario.titre }}
+                            </h4>
+                            <p class="mb-0">{{ scenario.description }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                🖊️ Votre réponse (minimum 50 caractères) :
+                            </label>
+                            <textarea name="scenario_{{ scenario.id }}"
+                                      class="form-control textarea-reponse"
+                                      rows="4"
+                                      placeholder="Décrivez comment vous réagiriez dans cette situation..."
+                                      required></textarea>
+                            <div class="text-end mt-1">
+                                <small class="text-muted">Caractères : <span id="count_{{ scenario.id }}">0</span></small>
+                            </div>
+                        </div>
+
+                        <div class="bonnes-pratiques">
+                            <h6>💡 Points à considérer :</h6>
+                            <ul class="mb-0">
+                                {% for pratique in scenario.bonnes_pratiques %}
+                                    <li>{{ pratique }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- Bouton de soumission -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-custom btn-lg" style="padding: 15px 60px;">
+                        📤 Soumettre mes réponses pour analyse
+                    </button>
+                    <p class="text-muted mt-2 small">
+                        ⏱️ Temps estimé : 15-20 minutes pour répondre à tous les scénarios
+                    </p>
+                </div>
+            </form>
+        {% else %}
+            <!-- Feedback des réponses -->
+            <div class="feedback-container">
+                <div class="text-center mb-4">
+                    <h2 style="color: #4a00e0;">📊 Analyse de vos réponses comportementales</h2>
+                    <p class="lead">Vous avez répondu à {{ feedback.total_scenarios }} scénarios</p>
+                </div>
+
+                <div class="row align-items-center mb-5">
+                    <div class="col-md-4 text-center">
+                        <div class="score-display">{{ feedback.score }}%</div>
+                        <div class="mt-3">
+                        <span class="evaluation-badge {{
+                        feedback.score >= 80 ? 'excellent' :
+                        feedback.score >= 60 ? 'bon' :
+                        feedback.score >= 40 ? 'moyen' : 'faible'
+                        }}">
+                            {{ feedback.evaluation }}
+                        </span>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h4 style="color: #8e2de2;">{{ feedback.recommendation }}</h4>
+                        <p>Votre score de {{ feedback.score }}% indique un niveau {{ feedback.evaluation|lower }} en compétences comportementales.</p>
+                    </div>
+                </div>
+
+                <!-- Points forts -->
+                {% if feedback.points_forts|length > 0 %}
+                    <div class="mb-4">
+                        <h5 style="color: #4caf50;">✅ Vos points forts :</h5>
+                        {% for point in feedback.points_forts %}
+                            <div class="point-fort-item">
+                                {{ point }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Conseils d'amélioration -->
+                {% if feedback.conseils|length > 0 %}
+                    <div class="mb-4">
+                        <h5 style="color: #2196f3;">💡 Conseils d'amélioration :</h5>
+                        {% for conseil in feedback.conseils %}
+                            <div class="conseil-item">
+                                {{ conseil }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="text-center mt-5">
+                    <a href="{{ path('candidat_simulateur_comportemental') }}" class="btn btn-custom btn-lg me-3">
+                        🔁 Refaire l'exercice
+                    </a>
+                    <!-- CORRECTION ICI : candidat_simulateur_feedback -->
+                    <a href="{{ path('candidat_simulateur_feedback') }}" class="btn btn-custom btn-lg">
+                        🤖 Analyser une réponse spécifique
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.querySelectorAll('textarea').forEach(textarea => {
+            const id = textarea.name;
+            const counter = document.getElementById('count_' + id);
+
+            textarea.addEventListener('input', function() {
+                counter.textContent = this.value.length;
+
+                if (this.value.length < 50) {
+                    counter.style.color = '#f44336';
+                } else if (this.value.length < 100) {
+                    counter.style.color = '#ff9800';
+                } else {
+                    counter.style.color = '#4caf50';
+                }
+            });
+
+            counter.textContent = textarea.value.length;
+        });
+    </script>
+{% endblock %}
